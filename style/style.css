@@ -1,79 +1,80 @@
-*{
+body{
+    background: black;
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 0;
+    margin: 0;
+}
+
+div, p, a, img, form, button{
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6{
     margin: 0;
     padding: 0;
-    font-family: 'Courier New', Courier, monospace;
 }
 
-body{
-    background-color: black;
+a{
+    text-decoration: none;
 }
 
-.logo img{
-    width: 50px;
-    height: 50px;
-    position: absolute;
-    float: left;
-    margin-top: 25px;
+ul, li{
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+
+.header{
+    
+}
+
+.conteineer{
+    width: 1140px;
+    margin: 0 auto;
+
+}
+
+.nav{
+    display: flex;
+}
+
+.menu{
+    display: flex;
+    margin-left: auto;
+    align-items: center;
+}
+
+.menu li {
+    font-size: 16px;
+    margin-right: 25px;
+}
+
+.menu li a{
+    color: #AEAEAE;
+    padding: 1px 0;
+}
+
+.menu li.home a{
+    border-bottom: 2px solid white;
+    color: white;
+    /* color: #6bff3d;
+    border-top: 1px solid; */
+}
+
+.logo{
+    width: 60px;
+    height: 60px;
+    margin-top: 20px;
     margin-left: 20px;
 }
 
-ul{
-    float: right;
-    list-style-type: none;
-    margin-top: 25px;
-    margin-right: 100px;
+.title-content h1 {
+    font-size: 37px;
+    font-weight: 900;
+    margin-left: 20px;
 }
 
-ul li{
-    display: inline-block;
-    margin-right: 10px;
-}
 
-ul li a{
-    text-decoration: none;
-    color: #D7D7D7;
-    padding: 5px 0.2px;
-    transition: 0.5s ease;
-}
 
-ul li a:hover{
-    color: white;
-}
 
-ul li a.active{
-    border-bottom: 2px solid white; 
-    color: white;
-}
-
-.main{
-    max-width: 1200px;
-    margin: auto;
-}
-
-.title{
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.title h1{
-    color: white;
-    font-size: 45px;
-    font-weight: 300;
-    /* letter-spacing: -1px; */
-}
-
-.title p{
-    color: white;
-}
-
-.phoneimage{
-    position: absolute;
-    top: 70%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 0;
-    padding-bottom: 77%;
-    overflow: hidden;
-}
