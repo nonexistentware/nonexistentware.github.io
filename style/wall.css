@@ -91,7 +91,6 @@ ul, li{
 .row{
     margin-top: 40px;
     margin-left: 10px;
-    margin: 0;
 }
 
 .column {
@@ -99,8 +98,6 @@ ul, li{
     width: 20%;
     padding: 15px;
     text-align: center;
-    width: auto;
-    
   }
 
   .wall{

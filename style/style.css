@@ -11,7 +11,7 @@ div, p, a, img, form, button{
 }
 
 h1, h2, h3, h4, h5, h6{
-    margin: 0;
+    /* margin: 0; */
     padding: 0;
 }
 
@@ -23,10 +23,6 @@ ul, li{
     display: block;
     padding: 0;
     margin: 0;
-}
-
-.header{
-    
 }
 
 .conteineer{
@@ -83,10 +79,35 @@ ul, li{
     margin-top: 60px;
 }
 
+.maintitle{
+    position: fixed;
+    left: 0;
+    width: 100%;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
 .android{
     margin-left: auto;
     margin-top: 0;
     margin-right: 20px;
+}
+
+.gitbutton{
+    width: 70px;
+    height: 70px;
+    margin-left: 10px;
+}
+
+.googleplay{
+    width: 65px;
+    height: 65px;
+}
+
+.links{
+    margin-top: 130px;
+    margin-left: 1px;
 }
 
 footer{
@@ -104,16 +125,6 @@ footer{
     background-color: black;
     color: white;
     text-align: center;
-}
-
-.gitbutton{
-    width: 40px;
-    height: 40px;
-}
-
-.googleplay{
-    width: 40px;
-    height: 40px;
 }
 
 
