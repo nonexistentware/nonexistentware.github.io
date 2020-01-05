@@ -55,16 +55,15 @@ ul, li{
     padding: 1px 0;
 }
 
-.menu li.home a{
+/* .menu li.apps a{
     border-bottom: 2px solid white;
     color: white;
-    /* color: #6bff3d;
-    border-top: 1px solid; */
-}
+    color: #6bff3d;
+    border-top: 1px solid;
+}  */
 
 .title{
     display: flex;
-    
 }
 
 .logo{
@@ -89,12 +88,41 @@ ul, li{
     margin-right: 20px;
 }
 
+.row{
+    margin-top: 40px;
+    margin-left: 10px;
+    margin: 0;
+}
+
+.column {
+    float: left;
+    width: 20%;
+    padding: 15px;
+    text-align: center;
+    width: auto;
+    
+  }
+
+  .wall{
+      width: 250px;
+      height: 480px;
+  }
+  
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
 footer{
     bottom: 0px;
     position: fixed;
     text-align: center;
 }
 
+.description{
+    margin: 15px;
+}
 
 .footertitle{
     position: fixed;
@@ -116,4 +144,7 @@ footer{
     height: 40px;
 }
 
-
+.googleplay{
+    width: 40px;
+    height: 40px;
+}
