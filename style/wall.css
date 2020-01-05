@@ -144,7 +144,12 @@ footer{
     height: 40px;
 }
 
-.googleplay{
+.gplay{
     width: 40px;
     height: 40px;
+    margin-bottom: 10px;
+}
+
+.apptitle{
+    margin-bottom: 50px;
 }

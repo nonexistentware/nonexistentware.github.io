@@ -1,5 +1,5 @@
 body{
-    background:black;
+    background: black;
     color: white;
     font-family: 'Courier New', Courier, monospace;
     padding: 0;
@@ -55,7 +55,7 @@ ul, li{
     padding: 1px 0;
 }
 
-.menu li.home a{
+.menu li.about a{
     border-bottom: 2px solid white;
     color: white;
     /* color: #6bff3d;
@@ -87,6 +87,25 @@ ul, li{
     margin-left: auto;
     margin-top: 0;
     margin-right: 20px;
+}
+
+.row{
+    margin-top: 40px;
+    margin-left: 10px;
+   
+}
+
+.column {
+    float: left;
+    width: 20%;
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 footer{
