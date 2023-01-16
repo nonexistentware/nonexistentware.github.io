@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>How to Create Random Word Generator Using JavaScript & HTML Form With Example?</title>
+</head>
+<body>
+<h1>How to Create Random Word Generator Using JavaScript & HTML Form With Example?</h1>
+<button id="new">Refresh</button>
+<input type="text" value="10" id="num"></input>
+<div id="whatever"></div>
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<script>
+function createRandomWord(length) {
+var consonants = 'bcdfghjklmnpqrstvwxyz',
+vowels = 'aeiou',
+rand = function(limit) {
+return Math.floor(Math.random()*limit);
+},
+i, word='', length = parseInt(length,5),
+consonants = consonants.split(''),
+vowels = vowels.split('');
+for (i=0;i<length/2;i++) {
+var randConsonant = consonants[rand(consonants.length)],
+randVowel = vowels[rand(vowels.length)];
+word += (i===0) ? randConsonant.toUpperCase() : randConsonant;
+word += i*2<length-1 ? randVowel : '';
+}
+return word;
+}
+$("#new").click(function(){
+$("#whatever").text('');
+for(var p = 0; p < 10; p++){ 
+$("#whatever").append(createRandomWord($("#num").val())+'<br/>');
+}
+});
+</script>
+</body>
+</html>
