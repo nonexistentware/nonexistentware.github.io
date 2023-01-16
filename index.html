@@ -1,37 +1,132 @@
 <html>
-<head>
-<title>How to Create Random Word Generator Using JavaScript & HTML Form With Example?</title>
+<head lang="en">
+  <meta charset utf-8>
+  <link rel="icon" href="images/icon.png"/>
+  <link rel="stylesheet" type="text/css" href="main.css"/>
+  <title>Random word generator</title>
+
+
+
+  <link rel="icon"  type="image/icon" href="https://scontent.fiev9-1.fna.fbcdn.net/v/t1.0-1/p160x160/15697538_1146361185478542_7836678809240001607_n.jpg?_nc_cat=0&oh=7236e85eb4762d44698ae3055a990fc0&oe=5BF8E3DE"/>
 </head>
+
 <body>
-<h1>How to Create Random Word Generator Using JavaScript & HTML Form With Example?</h1>
-<button id="new">Refresh</button>
-<input type="text" value="10" id="num"></input>
-<div id="whatever"></div>
-<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
-<script>
-function createRandomWord(length) {
-var consonants = 'bcdfghjklmnpqrstvwxyz',
-vowels = 'aeiou',
-rand = function(limit) {
-return Math.floor(Math.random()*limit);
-},
-i, word='', length = parseInt(length,5),
-consonants = consonants.split(''),
-vowels = vowels.split('');
-for (i=0;i<length/2;i++) {
-var randConsonant = consonants[rand(consonants.length)],
-randVowel = vowels[rand(vowels.length)];
-word += (i===0) ? randConsonant.toUpperCase() : randConsonant;
-word += i*2<length-1 ? randVowel : '';
-}
-return word;
-}
-$("#new").click(function(){
-$("#whatever").text('');
-for(var p = 0; p < 10; p++){ 
-$("#whatever").append(createRandomWord($("#num").val())+'<br/>');
-}
-});
-</script>
+
+  
+
+<!-- <div class="background">
+    <img src="images/wallpaper.jpg"/>
+    </div> -->
+
+<p class="myFont">
+    <div class="outer">
+    <div class="middle">
+    <div class="inner">
+
+      <div class="name">
+            <span style="font-weight"> Тисни на кнопку! </span> 
+        </div>
+
+        <div class="line"></div>
+
+        
+
+      <h2></h2>
+      <div>
+        <button class="btn"><h2>Крокуй!</h2></button>
+      </div>
+      <div>
+       
+      
+    
+      <div id="output"></div>
+    
+      <script>
+       
+        var btn = document.querySelector("button");
+        var out = document.getElementById("output");
+        
+      
+        btn.addEventListener("click", getWord);
+       
+        function getWord(){
+         
+          
+          var theWord= [
+            'dog',
+            'potato',
+            'cow',
+            'parrot',
+            'stone',
+            'watch',
+             'house',
+             'biolumonesance',
+            'brake',
+            'potato/salad',
+            'trip',
+            'hipopotomus',
+            'mask',
+            'chicken',
+            'Pneumonoultramicroscopicsilicovolcanoconiosis',
+          ];
+    
+          
+          var wordNum = Math.floor(Math.random() * theWord.length);
+          
+         
+          output.textContent = theWord[wordNum];
+        }
+    </script>
+
+        <div class="bio">
+            <span class="brief">Коротенько о сервісі:</span>
+            <br/>
+            <span>Тисни на кнопку та отримуй випалкове слово.</span>
+            <br/>
+            <span>Після отриманного результата тобі доведеться крокувати до місця призначення. </span>
+            <br/>
+            <span>Сервіс був створений на тверезу голову. Просто сидіти на яхті та літати на власному літаку трохи набридло.</span>
+        </div>
+      </p>
+        <div class="icons">
+            <!-- <a href="https://drive.google.com/file/d/175uAcfGT7kDNQPfbDmV99vKwjcLRGNwL/view?usp=sharing"
+            id="cv" onclick="sendEvent(this)">
+            <img class="button" src="images/icons/cv.png" onMouseOver="hover(this)" onMouseOut="hoverOut(this)"/>
+          </a>
+
+
+            <a href="https://github.com/IgorSinchuk"
+            id="cv" onclick="sendEvent(this)">
+            <img class="button" src="images/icons/github.png" onMouseOver="hover(this)" onMouseOut="hoverOut(this)"/>
+          </a>
+
+
+
+            <a href="https://www.linkedin.com/in/igorsinchuk/"
+               id="linkedin" onclick="sendEvent(this)">
+                <img class="button" src="images/icons/linkedin.png" onMouseOver="hoverIn(this)" onMouseOut="hoverOut(this)"/>
+            </a>
+
+
+
+            <a href="https://www.facebook.com/profile.php?id=100003140149327"
+               id="facebook" onclick="sendEvent(this)">
+                <img class="button" src="images/icons/facebook.png" onMouseOver="hoverIn(this)" onMouseOut="hoverOut(this)"/>
+            </a>
+
+
+            <a href="https://play.google.com/store/apps/developer?id=Nonexistent+ware&hl=en"
+               id="playmarket" onclick="sendEvent(this)">
+                <img class="button" src="images/icons/play.png" onMouseOver="hoverIn(this)" onMouseOut="hoverOut(this)"/>
+            </a> -->
+
+        </div>
+          <div class="bottom">
+            <p class="copyright">2023 ©</p>
+          </div>
+      </div>
+  </div>
+  </div>
+
 </body>
 </html>
