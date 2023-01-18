@@ -29,15 +29,29 @@
 
         
 
+        <!-- <div>
+          <button class="btn"><h2>Крокуй!</h2></button>
+        </div> -->
+
       <h2></h2>
       <div>
-        <button class="btn"><h2>Крокуй!</h2></button>
-      </div>
+        
+        <form action="https://api.sheetmonkey.io/form/kJC6dfjnoMquao5XQcgtnd" method="post">
+          <button class="btn" type="button" style="fodnt-weight"><h2>Крокуй!</h2></button>
+          <!-- Put HTML input fields in here and see how they fill up your sheet -->
+          <label>Example Field: <input id="inputType" type="text" name="Example Header" required value=""/></label>
+          <input type="hidden" name="Created" value="x-sheetmonkey-current-date-time" />
+          <br/>
+          <output id="output" name="result"></output>
+          <br/>
+          <input type="submit" value="Submit"/>
+          
+        </form>
       <div>
        
       
-    
-      <div id="output"></div>
+        <!-- <div id="output"></div> -->
+      
     
       <script>
        
@@ -73,6 +87,9 @@
           
          
           output.textContent = theWord[wordNum];
+          
+          document.getElementById("inputType").value = theWord[wordNum];
+
         }
     </script>
       <p>
@@ -126,7 +143,7 @@
 
         <div class="feedback">
         
-          
+        
 
         </div>
           <div class="bottom">Nonexistent ware 2017 ©</p>
