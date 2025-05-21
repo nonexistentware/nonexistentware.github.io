@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Template Downloader</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    .centered-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      text-align: center;
+    }
+
+    select, button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: none;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="centered-container">
+    <h2>Web service to download empty template</h2>
+    <p>Pick your template</p>
+    <select id="templateSelect">
+      <option value="">Select template</option>
+      <option value="html">Empty HTML Page</option>
+      <option value="pom">pom.xml</option>
+    </select>
+    <button id="downloadBtn">Download</button>
+  </div>
+
+  <script>
+    const templateSelect = document.getElementById('templateSelect');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    const templates = {
+      html: {
+        filename: 'index.html',
+        content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Empty HTML Page</title>
+</head>
+<body>
+
+</body>
+</html>`
+      },
+      pom: {
+        filename: 'pom.xml',
+        content: `<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>my-app</artifactId>
+  <version>1.0-SNAPSHOT</version>
+</project>`
+      }
+    };
+
+    templateSelect.addEventListener('change', () => {
+      downloadBtn.style.display = templateSelect.value ? 'inline-block' : 'none';
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const selected = templateSelect.value;
+      const template = templates[selected];
+      if (!template) return;
+
+      const blob = new Blob([template.content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = template.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
