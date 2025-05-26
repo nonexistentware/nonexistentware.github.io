@@ -50,6 +50,12 @@
     <option>PATCH</option>
   </select>
 
+  <label for="headerMode">Header Mode:</label>
+   <select id="headerMode">
+  <option value="custom">Use Custom Headers</option>
+  <option value="none">Don't Use Headers</option>
+  </select>
+
   <label for="headers">Headers (JSON):</label>
   <textarea id="headers" rows="4" placeholder='{"Authorization": "Bearer token"}'></textarea>
   <input type="file" id="headersFile" accept=".json"/>
@@ -91,17 +97,17 @@
     }
 
     async function sendRequest() {
-      const url = document.getElementById('url').value;
-      const method = document.getElementById('method').value;
-      let headers = {};
-      let body = document.getElementById('body').value;
+      const headerMode = document.getElementById('headerMode').value;
+let headers = {};
 
-      try {
-        headers = JSON.parse(document.getElementById('headers').value || '{}');
-      } catch (e) {
-        alert("Invalid JSON in headers");
-        return;
-      }
+if (headerMode === 'custom') {
+  try {
+    headers = JSON.parse(document.getElementById('headers').value || '{}');
+  } catch (e) {
+    alert("Invalid JSON in headers");
+    return;
+  }
+} // if 'none', headers will be empty
 
       let options = {
         method,
