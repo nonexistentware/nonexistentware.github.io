@@ -38,6 +38,9 @@
   <label for="url">API URL:</label>
   <input type="text" id="url" placeholder="https://api.example.com/data"/>
 
+  <br>
+  <button onclick="sendRequest()">Send Request</button>
+
   <label for="method">Method:</label>
   <select id="method">
     <option>GET</option>
@@ -56,9 +59,6 @@
   <textarea id="body" rows="6" placeholder='{"key": "value"}'></textarea>
   <input type="file" id="bodyFile" accept=".json"/>
   <button onclick="loadFileToTextarea('bodyFile', 'body')">Upload Body</button>
-
-  <br><br>
-  <button onclick="sendRequest()">Send Request</button>
 
   <h2>Response</h2>
   <pre id="response">Waiting for request...</pre>
