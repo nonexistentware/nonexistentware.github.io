@@ -32,7 +32,7 @@
     }
   </style>
 </head>
-<body>
+<body onload="toggleHeaderSection()">
   <h1>API Tester</h1>
 
   <label for="url">API URL:</label>
@@ -51,15 +51,17 @@
   </select>
 
   <label for="headerMode">Header Mode:</label>
-   <select id="headerMode">
-  <option value="custom">Use Custom Headers</option>
-  <option value="none">Don't Use Headers</option>
+  <select id="headerMode" onchange="toggleHeaderSection()">
+    <option value="custom">Use Custom Headers</option>
+    <option value="none">Don't Use Headers</option>
   </select>
 
-  <label for="headers">Headers (JSON):</label>
-  <textarea id="headers" rows="4" placeholder='{"Authorization": "Bearer token"}'></textarea>
-  <input type="file" id="headersFile" accept=".json"/>
-  <button onclick="loadFileToTextarea('headersFile', 'headers')">Upload Headers</button>
+  <div id="headerSection">
+    <label for="headers">Headers (JSON):</label>
+    <textarea id="headers" rows="4" placeholder='{"Authorization": "Bearer token"}'></textarea>
+    <input type="file" id="headersFile" accept=".json"/>
+    <button onclick="loadFileToTextarea('headersFile', 'headers')">Upload Headers</button>
+  </div>
 
   <label for="body">Body (JSON for POST/PUT):</label>
   <textarea id="body" rows="6" placeholder='{"key": "value"}'></textarea>
@@ -67,12 +69,18 @@
   <button onclick="loadFileToTextarea('bodyFile', 'body')">Upload Body</button>
 
   <h2>Response</h2>
-  <pre id="response">Waiting for request...</pre>
+  <pre id="response" style="min-height: 4em;"></pre>
   <button id="downloadBtn" onclick="downloadResponse()">Download Response</button>
 
   <script>
     let latestResponseText = '';
     let latestResponseType = 'text/plain';
+
+    function toggleHeaderSection() {
+      const mode = document.getElementById('headerMode').value;
+      const section = document.getElementById('headerSection');
+      section.style.display = mode === 'custom' ? 'block' : 'none';
+    }
 
     function loadFileToTextarea(fileInputId, textareaId) {
       const fileInput = document.getElementById(fileInputId);
@@ -97,26 +105,34 @@
     }
 
     async function sendRequest() {
+      document.getElementById('response').textContent = ""; // Clear old output
+      document.getElementById('downloadBtn').style.display = 'none'; // Hide download button
+      const url = document.getElementById('url').value;
+      const method = document.getElementById('method').value;
       const headerMode = document.getElementById('headerMode').value;
-let headers = {};
+      const bodyInput = document.getElementById('body');
+      let headers = {};
+      let bodyValue = bodyInput?.value ?? "";
 
-if (headerMode === 'custom') {
-  try {
-    headers = JSON.parse(document.getElementById('headers').value || '{}');
-  } catch (e) {
-    alert("Invalid JSON in headers");
-    return;
-  }
-} // if 'none', headers will be empty
+      // Build headers
+      if (headerMode === 'custom') {
+        try {
+          headers = JSON.parse(document.getElementById('headers').value || '{}');
+        } catch (e) {
+          alert("Invalid JSON in headers");
+          return;
+        }
+      }
 
       let options = {
         method,
         headers
       };
 
-      if (method !== 'GET' && method !== 'DELETE' && body.trim()) {
+      // Add body for POST/PUT/PATCH if present
+      if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && typeof bodyValue === 'string' && bodyValue.trim()) {
         try {
-          options.body = JSON.stringify(JSON.parse(body));
+          options.body = JSON.stringify(JSON.parse(bodyValue));
           headers['Content-Type'] = 'application/json';
         } catch (e) {
           alert("Invalid JSON in body");
@@ -140,9 +156,7 @@ if (headerMode === 'custom') {
 
         document.getElementById('response').textContent =
           `Status: ${res.status}\n\n${latestResponseText}`;
-
         document.getElementById('downloadBtn').style.display = 'inline-block';
-
       } catch (err) {
         latestResponseText = `Error: ${err.message}`;
         latestResponseType = 'text/plain';
