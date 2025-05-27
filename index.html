@@ -1,182 +1,167 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Advanced API Tester</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Вибір веб сервісу</title>
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   <style>
+    :root {
+      --bg-color: #f5f5f5;
+      --text-color: #222;
+      --card-bg: #fff;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --text-color: #eee;
+      --card-bg: #1e1e1e;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      font-family: "Roboto", sans-serif;
+      transition: background 0.3s, color 0.3s;
     }
-    textarea, input, select {
+
+    .theme-toggle {
+      position: absolute;
+      top: 16px;
+      right: 24px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 40px;
+      padding-top: 60px;
+      padding-bottom: 40px;
+    }
+
+    .services-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .service-card {
+      width: 250px;
+      height: 350px;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      text-align: center;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .service-title {
+      font-size: 20px;
+      font-weight: 500;
+      margin: 12px 0;
+    }
+
+    .service-image {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 15px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 4px;
     }
-    button {
-      padding: 10px 20px;
-      margin-right: 10px;
-    }
-    pre {
-      background-color: #f4f4f4;
-      padding: 15px;
-      border: 1px solid #ccc;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    #downloadBtn {
-      display: none;
-      margin-top: 15px;
+
+    .service-description {
+      font-size: 14px;
+      color: inherit;
+      margin-top: auto;
     }
   </style>
 </head>
-<body onload="toggleHeaderSection()">
-  <h1>API Tester</h1>
+<body>
 
-  <label for="url">API URL:</label>
-  <input type="text" id="url" placeholder="https://api.example.com/data"/>
-
-  <br>
-  <button onclick="sendRequest()">Send Request</button>
-
-  <label for="method">Method:</label>
-  <select id="method">
-    <option>GET</option>
-    <option>POST</option>
-    <option>PUT</option>
-    <option>DELETE</option>
-    <option>PATCH</option>
-  </select>
-
-  <label for="headerMode">Header Mode:</label>
-  <select id="headerMode" onchange="toggleHeaderSection()">
-    <option value="custom">Use Custom Headers</option>
-    <option value="none">Don't Use Headers</option>
-  </select>
-
-  <div id="headerSection">
-    <label for="headers">Headers (JSON):</label>
-    <textarea id="headers" rows="4" placeholder='{"Authorization": "Bearer token"}'></textarea>
-    <input type="file" id="headersFile" accept=".json"/>
-    <button onclick="loadFileToTextarea('headersFile', 'headers')">Upload Headers</button>
+  <!-- Перемикач теми -->
+  <div class="theme-toggle">
+    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="themeSwitch">
+      <input type="checkbox" id="themeSwitch" class="mdl-switch__input">
+      <span class="mdl-switch__label">Темна тема</span>
+    </label>
   </div>
 
-  <label for="body">Body (JSON for POST/PUT):</label>
-  <textarea id="body" rows="6" placeholder='{"key": "value"}'></textarea>
-  <input type="file" id="bodyFile" accept=".json"/>
-  <button onclick="loadFileToTextarea('bodyFile', 'body')">Upload Body</button>
+  <div class="main-content">
+    <!-- Верхній ряд -->
+     
+    <div class="services-row">
+      <a href="services/filegenerator.html">
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Csv generator and edtiro</div>
+        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 1">
+        <div class="service-description">Короткий опис сервісу 1, його можливості та переваги.</div>
+      </div></a>
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Сервіс 2</div>
+        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 2">
+        <div class="service-description">Короткий опис сервісу 2, чим він корисний та для кого.</div>
+      </div>
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Сервіс 3</div>
+        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 3">
+        <div class="service-description">Короткий опис сервісу 3. Простий та ефективний.</div>
+      </div>
+    </div>
 
-  <h2>Response</h2>
-  <pre id="response" style="min-height: 4em;"></pre>
-  <button id="downloadBtn" onclick="downloadResponse()">Download Response</button>
+    <!-- Нижній ряд -->
+    <div class="services-row">
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Сервіс 4</div>
+        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 4">
+        <div class="service-description">Опис сервісу 4. Надійний і швидкий.</div>
+      </div>
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Сервіс 5</div>
+        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 5">
+        <div class="service-description">Опис сервісу 5. Ідеальний для команди.</div>
+      </div>
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Сервіс 6</div>
+        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 6">
+        <div class="service-description">Опис сервісу 6. Для особистого використання.</div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    let latestResponseText = '';
-    let latestResponseType = 'text/plain';
+    const body = document.body;
+    const themeSwitch = document.getElementById('themeSwitch');
 
-    function toggleHeaderSection() {
-      const mode = document.getElementById('headerMode').value;
-      const section = document.getElementById('headerSection');
-      section.style.display = mode === 'custom' ? 'block' : 'none';
+    // Завантаження теми з localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      body.setAttribute('data-theme', 'dark');
+      themeSwitch.checked = true;
+    } else {
+      body.setAttribute('data-theme', 'light');
+      themeSwitch.checked = false;
     }
 
-    function loadFileToTextarea(fileInputId, textareaId) {
-      const fileInput = document.getElementById(fileInputId);
-      const textarea = document.getElementById(textareaId);
-      const file = fileInput.files[0];
-
-      if (!file) {
-        alert("No file selected.");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const json = JSON.parse(reader.result);
-          textarea.value = JSON.stringify(json, null, 2);
-        } catch (e) {
-          alert("Invalid JSON file.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    async function sendRequest() {
-      document.getElementById('response').textContent = ""; // Clear old output
-      document.getElementById('downloadBtn').style.display = 'none'; // Hide download button
-      const url = document.getElementById('url').value;
-      const method = document.getElementById('method').value;
-      const headerMode = document.getElementById('headerMode').value;
-      const bodyInput = document.getElementById('body');
-      let headers = {};
-      let bodyValue = bodyInput?.value ?? "";
-
-      // Build headers
-      if (headerMode === 'custom') {
-        try {
-          headers = JSON.parse(document.getElementById('headers').value || '{}');
-        } catch (e) {
-          alert("Invalid JSON in headers");
-          return;
-        }
-      }
-
-      let options = {
-        method,
-        headers
-      };
-
-      // Add body for POST/PUT/PATCH if present
-      if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && typeof bodyValue === 'string' && bodyValue.trim()) {
-        try {
-          options.body = JSON.stringify(JSON.parse(bodyValue));
-          headers['Content-Type'] = 'application/json';
-        } catch (e) {
-          alert("Invalid JSON in body");
-          return;
-        }
-      }
-
-      try {
-        const res = await fetch(url, options);
-        const contentType = res.headers.get("content-type") || '';
-        latestResponseType = contentType;
-
-        let data;
-        if (contentType.includes("application/json")) {
-          data = await res.json();
-          latestResponseText = JSON.stringify(data, null, 2);
-        } else {
-          data = await res.text();
-          latestResponseText = data;
-        }
-
-        document.getElementById('response').textContent =
-          `Status: ${res.status}\n\n${latestResponseText}`;
-        document.getElementById('downloadBtn').style.display = 'inline-block';
-      } catch (err) {
-        latestResponseText = `Error: ${err.message}`;
-        latestResponseType = 'text/plain';
-        document.getElementById('response').textContent = latestResponseText;
-        document.getElementById('downloadBtn').style.display = 'inline-block';
-      }
-    }
-
-    function downloadResponse() {
-      const blob = new Blob([latestResponseText], {
-        type: latestResponseType.includes("json") ? "application/json" : "text/plain"
-      });
-
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = latestResponseType.includes("json") ? "response.json" : "response.txt";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+    // Перемикання теми
+    themeSwitch.addEventListener('change', () => {
+      const newTheme = themeSwitch.checked ? 'dark' : 'light';
+      body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
   </script>
+
 </body>
 </html>
