@@ -16,6 +16,14 @@
     <h1>CSV Generator</h1>
     <p>Create and export table data to different formats.</p>
 
+    
+<div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+  <label class="switch">
+    <input type="checkbox" id="theme-toggle" onchange="toggleTheme()" />
+    <span class="slider"></span>
+  </label>
+</div>
+
 <div style="margin-bottom: 15px;">
   <label for="row-count">Number of Rows:</label>
   <input type="number" id="row-count" min="1" value="1" style="width: 60px; padding: 5px;" />
@@ -409,6 +417,22 @@ function getFileExtension(format) {
     "TXT": "txt",
     "LaTeX table": "tex"
   };
+
+  function toggleTheme() {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  }
+
+  // Apply theme on load
+  window.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark");
+      const toggle = document.getElementById("theme-toggle");
+      if (toggle) toggle.checked = true;
+    }
+  });
 
   const ext = extensions[lastFormat] || "txt";
   const blob = new Blob([lastGeneratedText], { type: "text/plain" });

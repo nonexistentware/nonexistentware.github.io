@@ -13,7 +13,7 @@
       --card-bg: #fff;
     }
 
-    [data-theme="dark"] {
+    body[data-theme="dark"] {
       --bg-color: #121212;
       --text-color: #eee;
       --card-bg: #1e1e1e;
@@ -27,10 +27,22 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    .theme-toggle {
+    #themeToggle {
       position: absolute;
       top: 16px;
       right: 24px;
+      background-color: transparent;
+      border: 1px solid var(--text-color);
+      color: var(--text-color);
+      font-size: 16px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    #themeToggle:hover {
+      background-color: rgba(0, 0, 0, 0.1);
     }
 
     .main-content {
@@ -92,75 +104,72 @@
 <body>
 
   <!-- Перемикач теми -->
-  <div class="theme-toggle">
-    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="themeSwitch">
-      <input type="checkbox" id="themeSwitch" class="mdl-switch__input">
-      <span class="mdl-switch__label">Темна тема</span>
-    </label>
-  </div>
+   <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
 
   <div class="main-content">
     <!-- Верхній ряд -->
      
-    <div class="services-row">
+   <div class="services-row">
       <a href="services/filegenerator.html">
       <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Csv generator and edtiro</div>
-        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 1">
+        <div class="service-title">Csv generator and editor</div>
+        <img class="service-image" src="/img/generator.png" alt="generator_img">
         <div class="service-description">Короткий опис сервісу 1, його можливості та переваги.</div>
       </div></a>
+      <a href="services/apitester.html">
       <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Сервіс 2</div>
-        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 2">
+        <div class="service-title">API online</div>
+        <img class="service-image" src="/img/api.png" alt="api_img">
         <div class="service-description">Короткий опис сервісу 2, чим він корисний та для кого.</div>
-      </div>
+      </div></a>
+      <a href="services/converter.html">
       <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Сервіс 3</div>
-        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 3">
+        <div class="service-title">Converter(TXT/JSON/YAML)</div>
+        <img class="service-image" src="/img/converter.png" alt="converter_img">
         <div class="service-description">Короткий опис сервісу 3. Простий та ефективний.</div>
-      </div>
+      </div></a>
     </div>
 
     <!-- Нижній ряд -->
     <div class="services-row">
+      <a href="services/templatecreator.html">
       <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Сервіс 4</div>
-        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 4">
+        <div class="service-title">Empty templates</div>
+        <img class="service-image" src="/img/templates.png" alt="template_img">
         <div class="service-description">Опис сервісу 4. Надійний і швидкий.</div>
-      </div>
+      </div></a>
+      <a href="services/weightgenerator.html">
       <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Сервіс 5</div>
-        <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 5">
+        <div class="service-title">Create file with weight</div>
+        <img class="service-image" src="/img/weight.png" alt="weight">
         <div class="service-description">Опис сервісу 5. Ідеальний для команди.</div>
-      </div>
-      <div class="service-card mdl-shadow--2dp">
+      </div></a>
+      <!-- <div class="service-card mdl-shadow--2dp">
         <div class="service-title">Сервіс 6</div>
         <img class="service-image" src="https://via.placeholder.com/250x150" alt="Сервіс 6">
         <div class="service-description">Опис сервісу 6. Для особистого використання.</div>
-      </div>
+      </div> -->
     </div>
   </div>
 
   <script>
-    const body = document.body;
-    const themeSwitch = document.getElementById('themeSwitch');
+     const body = document.body;
+    const themeBtn = document.getElementById('themeToggle');
 
-    // Завантаження теми з localStorage
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      body.setAttribute('data-theme', 'dark');
-      themeSwitch.checked = true;
-    } else {
-      body.setAttribute('data-theme', 'light');
-      themeSwitch.checked = false;
+    function applyTheme(theme) {
+      body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      themeBtn.textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
     }
 
-    // Перемикання теми
-    themeSwitch.addEventListener('change', () => {
-      const newTheme = themeSwitch.checked ? 'dark' : 'light';
-      body.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-    });
+    function toggleTheme() {
+      const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
+    }
+
+    // Завантажити тему при старті
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme);
   </script>
 
 </body>

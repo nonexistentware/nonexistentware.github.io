@@ -33,9 +33,85 @@
       display: none;
       margin-top: 15px;
     }
+
+    /* theme change */
+    :root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --input-bg: #f9f9f9;
+  --input-text: #000000;
+  --border-color: #ccc;
+  --button-bg: #f0f0f0;
+  --button-text: #000000;
+  --button-border: #ccc;
+  --response-bg: #f4f4f4;
+}
+
+body.dark {
+  --bg-color: #121212;
+  --text-color: #f0f0f0;
+  --input-bg: #1e1e1e;
+  --input-text: #ffffff;
+  --border-color: #444;
+  --button-bg: #2a2a2a;
+  --button-text: #ffffff;
+  --button-border: #666;
+  --response-bg: #1e1e1e;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+  font-family: Arial, sans-serif;
+  position: relative;
+}
+
+/* Form Fields */
+textarea, input, select {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Buttons */
+button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: 1px solid var(--button-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* Response field */
+pre {
+  background-color: var(--response-bg);
+  color: var(--input-text);
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Theme toggle button */
+#themeToggle {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+}
+
+
+
   </style>
 </head>
-<body onload="toggleHeaderSection()">
+<body >
+   <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
+
   <h1>API Tester</h1>
 
   <label for="url">API URL:</label>
@@ -204,6 +280,27 @@ if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && typeof bodyValue 
       a.click();
       URL.revokeObjectURL(url);
     }
+
+    function toggleTheme() {
+      const body = document.body;
+      const isDark = body.classList.toggle('dark');
+      const theme = isDark ? 'dark' : 'light';
+      localStorage.setItem('theme', theme);
+      updateThemeIcon(theme);
+    }
+
+    function updateThemeIcon(theme) {
+      const themeBtn = document.getElementById('themeToggle');
+      themeBtn.textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
+    }
+
+    (function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+      }
+      updateThemeIcon(savedTheme);
+    })();
   </script>
 </body>
 </html>

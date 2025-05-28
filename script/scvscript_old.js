@@ -69,3 +69,21 @@ function generateDelimited(data, delimiter) {
   const rows = data.map(row => keys.map(key => row[key]).join(delimiter));
   return keys.join(delimiter) + '\n' + rows.join('\n');
 }
+
+
+  function toggleTheme() {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  }
+
+  // Apply theme on load
+  window.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark");
+      const toggle = document.getElementById("theme-toggle");
+      if (toggle) toggle.checked = true;
+    }
+  });
+
