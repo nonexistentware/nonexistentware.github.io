@@ -1,15 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Template Downloader</title>
   <style>
-    html, body {
-      height: 100%;
+    :root {
+      --bg-color-light: #f4f4f4;
+      --text-color-light: #000;
+      --btn-bg-light: #007bff;
+      --btn-hover-light: #0056b3;
+      --toggle-btn-light: #cccccc;
+
+      --bg-color-dark: #1e1e1e;
+      --text-color-dark: #f0f0f0;
+      --btn-bg-dark: #0056b3;
+      --btn-hover-dark: #003d80;
+      --toggle-btn-dark: #444444;
+    }
+
+    body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      background-color: var(--bg-color-light);
+      color: var(--text-color-light);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-dark);
     }
 
     .centered-container {
@@ -17,7 +37,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100%;
+      height: 100vh;
       text-align: center;
     }
 
@@ -29,20 +49,49 @@
       border: 1px solid #ccc;
     }
 
-    button {
-      background-color: #007bff;
+    #downloadBtn {
+      background-color: var(--btn-bg-light);
       color: white;
       border: none;
       cursor: pointer;
       display: none;
     }
 
-    button:hover {
-      background-color: #0056b3;
+    body.dark #downloadBtn {
+      background-color: var(--btn-bg-dark);
+    }
+
+    #downloadBtn:hover {
+      background-color: var(--btn-hover-light);
+    }
+
+    body.dark #downloadBtn:hover {
+      background-color: var(--btn-hover-dark);
+    }
+
+    #themeToggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 8px 14px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      border: none;
+      background-color: var(--toggle-btn-light);
+      color: #000;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark #themeToggle {
+      background-color: var(--toggle-btn-dark);
+      color: #fff;
     }
   </style>
 </head>
 <body>
+  <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
+
   <div class="centered-container">
     <h2>Download empty template</h2>
     <p>Pick your template</p>
@@ -57,20 +106,12 @@
   <script>
     const templateSelect = document.getElementById('templateSelect');
     const downloadBtn = document.getElementById('downloadBtn');
+    const themeToggle = document.getElementById('themeToggle');
 
     const templates = {
       html: {
         filename: 'index.html',
-        content: `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Empty HTML Page</title>
-</head>
-<body>
-
-</body>
-</html>`
+        content: `<!DOCTYPE html> <html lang="en"> <head>   <meta charset="UTF-8">   <title>Empty HTML Page</title> </head> <body>  </body> </html>`
       },
       pom: {
         filename: 'pom.xml',
@@ -105,6 +146,12 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
+
+    function toggleTheme() {
+      const body = document.body;
+      const isDark = body.classList.toggle('dark');
+      themeToggle.textContent = isDark ? '☀️ Theme' : '🌗 Theme';
+    }
   </script>
 </body>
 </html>
