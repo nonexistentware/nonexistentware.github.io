@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Temporary Email (10 Minutes)</title>
+  <style>
+    :root {
+      --bg: #f2f2f2;
+      --text: #000;
+      --box: #fff;
+      --border: #ccc;
+      --link: #007bff;
+      --button-bg: #007bff;
+      --button-hover: #0056b3;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #f5f5f5;
+      --box: #1e1e1e;
+      --border: #333;
+      --link: #66b2ff;
+      --button-bg: #333;
+      --button-hover: #444;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    #themeToggle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--button-bg);
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    h2, h3 {
+      margin: 10px 0;
+    }
+
+    .email-box {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+      color: var(--text);
+    }
+
+    .warning {
+      color: #d9534f;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    #time-left {
+      font-weight: bold;
+      color: #d9534f;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      text-align: left;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    li {
+      background: var(--box);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      padding: 10px;
+      transition: background 0.3s, border 0.3s;
+    }
+
+    .email-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .email-subject {
+      font-weight: bold;
+    }
+
+    .email-body {
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+
+    .timestamp {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      border: none;
+      background: var(--button-bg);
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: var(--button-hover);
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: underline;
+    }
+
+    a:hover {
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
+  <h2>Temporary Email Address</h2>
+  <div class="email-box" id="email-address">Loading...</div>
+  <div class="warning">⚠️ Don't reload the page, if you don't want to generate new mailbox.</div>
+  <div>Expires in: <span id="time-left">10:00</span></div>
+  <button onclick="resetTimer()">Give me 10 more minutes</button>
+  <h3>Received Emails</h3>
+  <button onclick="fetchMessages()">Refresh Inbox</button>
+
+
+  <ul id="email-list"><li>No emails yet.</li></ul>
+
+  <script>
+    let token = '';
+    let accountId = '';
+    let timer = 600;
+    let intervalId;
+    let pollId;
+    let seenMessageIds = new Set();
+    let messageCache = {};
+    let theme = localStorage.getItem('theme') || 'light';
+
+    function applyTheme() {
+      document.body.classList.toggle('dark', theme === 'dark');
+      document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
+    }
+
+    function toggleTheme() {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', theme);
+      applyTheme();
+    }
+
+    applyTheme();
+
+    async function createTempEmail() {
+      const domainsRes = await fetch("https://api.mail.tm/domains");
+      const domainsData = await domainsRes.json();
+      const domain = domainsData["hydra:member"][0].domain;
+
+      const random = Math.random().toString(36).substring(2, 10);
+      const email = `${random}@${domain}`;
+      const password = "P@ssw0rd123!";
+
+      await fetch("https://api.mail.tm/accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: email, password })
+      });
+
+      const tokenRes = await fetch("https://api.mail.tm/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: email, password })
+      });
+
+      const tokenData = await tokenRes.json();
+      token = tokenData.token;
+
+      const meRes = await fetch("https://api.mail.tm/me", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const meData = await meRes.json();
+      accountId = meData.id;
+
+      document.getElementById("email-address").textContent = email;
+      seenMessageIds.clear();
+      messageCache = {};
+      document.getElementById("email-list").innerHTML = '<li>No emails yet.</li>';
+    }
+
+    async function fetchMessages() {
+      const res = await fetch("https://api.mail.tm/messages", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      const newMessages = data["hydra:member"].filter(msg => !seenMessageIds.has(msg.id));
+
+      for (const msg of newMessages) {
+        seenMessageIds.add(msg.id);
+        const fullRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const fullData = await fullRes.json();
+        messageCache[msg.id] = fullData;
+      }
+
+      renderEmails();
+    }
+
+  const expandedMessages = new Set(); // remember opened messages
+
+function renderEmails() {
+  const list = document.getElementById("email-list");
+  list.innerHTML = "";
+
+  const messages = Object.values(messageCache);
+
+  if (messages.length === 0) {
+    list.innerHTML = "<li>No emails yet.</li>";
+    return;
+  }
+
+  messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  messages.forEach(email => {
+    const li = document.createElement("li");
+
+    const header = document.createElement("div");
+    header.className = "email-header";
+
+    const subject = document.createElement("div");
+    subject.className = "email-subject";
+    subject.textContent = `${email.from?.address || "Unknown"} - ${email.subject}`;
+
+    const toggleBtn = document.createElement("button");
+    toggleBtn.className = "toggle-btn";
+    toggleBtn.textContent = expandedMessages.has(email.id) ? "Hide" : "Show";
+
+    const body = document.createElement("div");
+    body.className = "email-body";
+    body.style.display = expandedMessages.has(email.id) ? "block" : "none";
+
+    const sanitizedText = (email.text || "").replace(
+      /(https?:\/\/[^\s]+)/g,
+      (match) => `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`
+    );
+
+    body.innerHTML = `<strong>Text:</strong><br>${sanitizedText}`;
+
+    const timestamp = document.createElement("div");
+    timestamp.className = "timestamp";
+    timestamp.textContent = `🕓 ${new Date(email.createdAt).toLocaleString()}`;
+
+    toggleBtn.onclick = () => {
+      const isVisible = body.style.display === "block";
+      body.style.display = isVisible ? "none" : "block";
+      toggleBtn.textContent = isVisible ? "Show" : "Hide";
+
+      if (isVisible) {
+        expandedMessages.delete(email.id);
+      } else {
+        expandedMessages.add(email.id);
+      }
+    };
+
+    header.appendChild(subject);
+    header.appendChild(toggleBtn);
+
+    li.appendChild(header);
+    li.appendChild(timestamp);
+    li.appendChild(body);
+    list.appendChild(li);
+  });
+}
+
+
+    function updateTimerDisplay() {
+      const min = String(Math.floor(timer / 60)).padStart(2, '0');
+      const sec = String(timer % 60).padStart(2, '0');
+      document.getElementById("time-left").textContent = `${min}:${sec}`;
+    }
+
+    function countdown() {
+      timer--;
+      updateTimerDisplay();
+      if (timer <= 0) {
+        clearInterval(intervalId);
+        clearInterval(pollId);
+        startApp();
+      }
+    }
+
+    function resetTimer() {
+      timer = 600;
+      updateTimerDisplay();
+    }
+
+    async function startApp() {
+      await createTempEmail();
+      timer = 600;
+      updateTimerDisplay();
+      intervalId = setInterval(countdown, 1000);
+      pollId = setInterval(fetchMessages, 5000);
+    }
+
+//     window.addEventListener("beforeunload", function (e) {
+//   e.preventDefault();
+//   e.returnValue = ''; // required for the prompt to show in modern browsers
+// });
+
+    startApp();
+  </script>
+</body>
+</html>
