@@ -1,44 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>File Size Selector</title>
   <style>
-    body, html {
-      height: 100%;
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #f0f0f0;
+    :root {
+      --bg-light: #f0f0f0;
+      --bg-dark: #222;
+      --text-light: #000;
+      --text-dark: #fff;
+      --input-bg-light: #fff;
+      --input-bg-dark: #333;
+      --input-border: #ccc;
     }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
     .container {
-      width: 300px;
-      background-color: white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      border-radius: 10px;
+      height: 100%;
+      width: 100%;
       padding: 20px;
       box-sizing: border-box;
     }
-    select, input[type="number"], button {
+
+    select, input[type="number"], input[type="range"], button {
       padding: 10px;
       margin: 10px 0;
-      width: 100%;
+      width: 300px;
       box-sizing: border-box;
+      background-color: var(--input-bg-light);
+      color: var(--text-light);
+      border: 1px solid var(--input-border);
+      transition: background-color 0.3s, color 0.3s;
     }
-    input[type="range"] {
-      width: 100%;
+
+    body.dark select,
+    body.dark input[type="number"],
+    body.dark input[type="range"],
+    body.dark button {
+      background-color: var(--input-bg-dark);
+      color: var(--text-dark);
+      border: 1px solid #555;
     }
+
     .size-display {
       margin-top: 10px;
       font-weight: bold;
     }
+
     #downloadBtn {
       display: none;
       cursor: pointer;
@@ -46,6 +72,25 @@
       color: white;
       border: none;
       border-radius: 5px;
+    }
+
+    #themeBtn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      width: 90px;
+      z-index: 999;
+      cursor: pointer;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+    }
+
+    body.dark #themeBtn {
+      background-color: #ddd;
+      color: #000;
     }
   </style>
 </head>
@@ -81,12 +126,15 @@
     <button id="downloadBtn">Download File</button>
   </div>
 
+  <button id="themeBtn">🌗 Theme</button>
+
   <script>
     const sizeRange = document.getElementById('sizeRange');
     const sizeInput = document.getElementById('sizeInput');
     const displaySize = document.getElementById('displaySize');
     const downloadBtn = document.getElementById('downloadBtn');
     const formatSelect = document.getElementById('format');
+    const themeBtn = document.getElementById('themeBtn');
 
     function showDownloadButton() {
       if (parseInt(sizeInput.value) > 0) {
@@ -115,7 +163,7 @@
     downloadBtn.addEventListener('click', () => {
       const sizeMB = parseInt(sizeInput.value);
       const format = formatSelect.value;
-      const byteSize = sizeMB * 1000 * 1000; // Use base-10 MB
+      const byteSize = sizeMB * 1000 * 1000;
 
       try {
         const content = new Uint8Array(byteSize);
@@ -129,6 +177,18 @@
       } catch (e) {
         alert('Failed to create large file. Try a smaller size.');
       }
+    });
+
+    // Apply saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+      themeBtn.textContent = '☀️ Theme';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      themeBtn.textContent = isDark ? '☀️ Theme' : '🌗 Theme';
     });
   </script>
 </body>
