@@ -286,11 +286,9 @@ messageCache[msg.id] = fullData;
 
 function renderEmails() {
   const list = document.getElementById("email-list");
-  if (!list) {
-    console.error("Element #email-list not found!");
-    return;
-  }
 
+  // Ensure the list container is visible (even if previously cleared or hidden)
+  list.style.display = "block";
   list.innerHTML = "";
 
   const messages = Object.values(messageCache);
@@ -315,13 +313,20 @@ function renderEmails() {
     const toggleBtn = document.createElement("button");
     toggleBtn.className = "toggle-btn";
     toggleBtn.textContent = "Show";
-// updated button
-    toggleBtn.onclick = () => {
-  const emailHtml = email.html?.[0];
-  const fallbackText = email.text || "(No content)";
-  const content = emailHtml || `<pre>${fallbackText}</pre>`;
-  openModal(content);
-};
+
+    const downloadBtn = document.createElement("button");
+    downloadBtn.className = "toggle-btn";
+    downloadBtn.textContent = "Download";
+
+    const body = document.createElement("div");
+    body.className = "email-body";
+
+    const emailHtml = email.html?.[0];
+    const fallbackText = email.text || "(No content)";
+    const content = emailHtml || `<pre>${fallbackText}</pre>`;
+
+    toggleBtn.onclick = () => openModal(content);
+    downloadBtn.onclick = () => downloadEmailAsPDF(content, email.subject || "email");
 
     const timestamp = document.createElement("div");
     timestamp.className = "timestamp";
@@ -329,12 +334,39 @@ function renderEmails() {
 
     header.appendChild(subject);
     header.appendChild(toggleBtn);
+    header.appendChild(downloadBtn);
 
     li.appendChild(header);
     li.appendChild(timestamp);
+    li.appendChild(body);
+
     list.appendChild(li);
   });
 }
+
+
+//btn function 
+function downloadEmailAsPDF(htmlContent, subject) {
+  const tempContainer = document.createElement("div");
+  tempContainer.style.padding = "20px";
+  tempContainer.style.fontFamily = "Arial, sans-serif";
+  tempContainer.innerHTML = htmlContent;
+
+  const opt = {
+    margin:       0.5,
+    filename:     `${sanitizeFilename(subject)}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(tempContainer).save();
+}
+
+function sanitizeFilename(name) {
+  return name.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0, 50);
+}
+
 
 
 // 
@@ -398,6 +430,10 @@ function handleEscape(e) {
 // });
 
     startApp();
+    
   </script>
+  <!--  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 </body>
 </html>
