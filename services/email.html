@@ -135,20 +135,71 @@
     a:hover {
       text-decoration: none;
     }
+    /* markup  */
+    .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #fff;
+  color: #000;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 80%;
+  max-height: 80%;
+  overflow: auto;
+  text-align: left;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+/* Dark theme modal */
+body.dark .modal-content {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+.modal-close {
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
   </style>
 </head>
 <body>
   <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
   <h2>Temporary Email Address</h2>
+  <!--  -->
+  
+
+<!--  -->
   <div class="email-box" id="email-address">Loading...</div>
   <div class="warning">⚠️ Don't reload the page, if you don't want to generate new mailbox.</div>
   <div>Expires in: <span id="time-left">10:00</span></div>
   <button onclick="resetTimer()">Give me 10 more minutes</button>
   <h3>Received Emails</h3>
   <button onclick="fetchMessages()">Refresh Inbox</button>
-
-
   <ul id="email-list"><li>No emails yet.</li></ul>
+
+<!-- Modal for email content -->
+<!-- Modal -->
+<div id="emailModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeModal()">&times;</span>
+    <div id="modal-body-content" style="height: 70vh;"></div>
+  </div>
+</div>
 
   <script>
     let token = '';
@@ -219,10 +270,11 @@
       for (const msg of newMessages) {
         seenMessageIds.add(msg.id);
         const fullRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const fullData = await fullRes.json();
-        messageCache[msg.id] = fullData;
+  headers: { Authorization: `Bearer ${token}` }
+});
+const fullData = await fullRes.json();
+messageCache[msg.id] = fullData;
+
       }
 
       renderEmails();
@@ -232,6 +284,11 @@
 
 function renderEmails() {
   const list = document.getElementById("email-list");
+  if (!list) {
+    console.error("Element #email-list not found!");
+    return;
+  }
+
   list.innerHTML = "";
 
   const messages = Object.values(messageCache);
@@ -255,46 +312,55 @@ function renderEmails() {
 
     const toggleBtn = document.createElement("button");
     toggleBtn.className = "toggle-btn";
-    toggleBtn.textContent = expandedMessages.has(email.id) ? "Hide" : "Show";
-
-    const body = document.createElement("div");
-    body.className = "email-body";
-    body.style.display = expandedMessages.has(email.id) ? "block" : "none";
-
-    const sanitizedText = (email.text || "").replace(
-      /(https?:\/\/[^\s]+)/g,
-      (match) => `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`
-    );
-
-    body.innerHTML = `<strong>Text:</strong><br>${sanitizedText}`;
+    toggleBtn.textContent = "Show";
+// updated button
+    toggleBtn.onclick = () => {
+  const emailHtml = email.html?.[0];
+  const fallbackText = email.text || "(No content)";
+  const content = emailHtml || `<pre>${fallbackText}</pre>`;
+  openModal(content);
+};
 
     const timestamp = document.createElement("div");
     timestamp.className = "timestamp";
     timestamp.textContent = `🕓 ${new Date(email.createdAt).toLocaleString()}`;
-
-    toggleBtn.onclick = () => {
-      const isVisible = body.style.display === "block";
-      body.style.display = isVisible ? "none" : "block";
-      toggleBtn.textContent = isVisible ? "Show" : "Hide";
-
-      if (isVisible) {
-        expandedMessages.delete(email.id);
-      } else {
-        expandedMessages.add(email.id);
-      }
-    };
 
     header.appendChild(subject);
     header.appendChild(toggleBtn);
 
     li.appendChild(header);
     li.appendChild(timestamp);
-    li.appendChild(body);
     list.appendChild(li);
   });
 }
 
 
+// 
+function openModal(htmlContent) {
+  const modal = document.getElementById("emailModal");
+  const modalBody = document.getElementById("modal-body-content");
+
+  // Allow rendering full HTML email safely inside an iframe
+  modalBody.innerHTML = `
+    <iframe style="width:100%; height:100%; border:none;" sandbox="allow-same-origin allow-popups allow-forms allow-scripts" srcdoc='${htmlContent.replace(/'/g, "&apos;")}'>
+    </iframe>
+  `;
+
+  modal.style.display = "flex";
+  document.addEventListener("keydown", handleEscape); // Add key listener
+}
+
+function closeModal() {
+  document.getElementById("emailModal").style.display = "none";
+  document.removeEventListener("keydown", handleEscape);
+}
+
+function handleEscape(e) {
+  if (e.key === "Escape") closeModal();
+}
+
+
+// 
     function updateTimerDisplay() {
       const min = String(Math.floor(timer / 60)).padStart(2, '0');
       const sec = String(timer % 60).padStart(2, '0');
