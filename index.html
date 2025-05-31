@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Online services</title>
 
-  <!-- Favicon for browser tab -->
-  <link rel="icon" type="image/png" href="/img/favgear2.png" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/img/internet.png">
 
   <!-- Material Design Lite -->
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
@@ -15,16 +15,14 @@
   <style>
     :root {
       --bg-color: #f5f5f5;
-      --text-color: #000000;
+      --text-color: #000;
       --card-bg: #fff;
     }
-
     body[data-theme="dark"] {
       --bg-color: #121212;
       --text-color: #eee;
       --card-bg: #1e1e1e;
     }
-
     body {
       background-color: var(--bg-color);
       color: var(--text-color);
@@ -33,10 +31,15 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    #themeToggle {
-      position: absolute;
+    #topButtons {
+      position: fixed;
       top: 16px;
       right: 24px;
+      display: flex;
+      gap: 12px;
+      z-index: 1001;
+    }
+    #topButtons button {
       background-color: transparent;
       border: 1px solid var(--text-color);
       color: var(--text-color);
@@ -46,8 +49,7 @@
       cursor: pointer;
       transition: background-color 0.3s, color 0.3s;
     }
-
-    #themeToggle:hover {
+    #topButtons button:hover {
       background-color: rgba(0, 0, 0, 0.1);
     }
 
@@ -58,7 +60,7 @@
       justify-content: center;
       min-height: 100vh;
       gap: 40px;
-      padding-top: 60px;
+      padding-top: 80px;
       padding-bottom: 40px;
     }
 
@@ -83,105 +85,251 @@
       transition: transform 0.2s, background 0.3s;
       color: var(--text-color);
     }
-
     .service-card:hover {
       transform: translateY(-5px);
     }
-
     .service-title {
       font-size: 20px;
       font-weight: 500;
       margin: 12px 0;
     }
-
     .service-image {
       width: 60%;
       height: 150px;
       object-fit: cover;
       border-radius: 4px;
     }
-
     .service-description {
       font-size: 14px;
-      color: inherit;
       margin-top: auto;
     }
-
     a {
       text-decoration: none;
       color: inherit;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+      background-color: var(--card-bg);
+      margin: 15% auto;
+      padding: 20px;
+      width: 300px;
+      border-radius: 8px;
+      color: var(--text-color);
+      text-align: center;
+    }
+    .modal-content input[type="email"] {
+      width: 90%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+    }
+    .modal-content button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      background-color: #3f51b5;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .close {
+      color: var(--text-color);
+      float: right;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: red;
+    }
+
+    .toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #4caf50;
+      color: white;
+      text-align: center;
+      border-radius: 8px;
+      padding: 12px;
+      position: fixed;
+      z-index: 999;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-size: 16px;
+      opacity: 0;
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
     }
   </style>
 </head>
 <body>
 
-  <!-- Theme Toggle Button -->
+<!-- Top-right buttons -->
+<div id="topButtons">
+  <button id="subscribeBtn">📧 Subscribe</button>
   <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
+</div>
 
-  <div class="main-content">
-    <div class="services-row">
-      <a href="services/filegenerator.html">
-        <div class="service-card mdl-shadow--2dp">
-          <div class="service-title">Csv generator</div>
-          <img class="service-image" src="/img/csv.png" alt="csv_img">
-          <div class="service-description">Generate cvs files or other. Could be craeated ready-made templates.</div>
-        </div>
-      </a>
+<!-- Modal for subscription -->
+<div id="subscribeModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Subscribe to updates</h3>
+    <form id="subscribeForm">
+      <input type="email" id="emailInput" placeholder="Your email address" required />
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+</div>
 
-      <a href="services/apitester.html">
-        <div class="service-card mdl-shadow--2dp">
-          <div class="service-title">API online</div>
-          <img class="service-image" src="/img/api.png" alt="api_img">
-          <div class="service-description">Online API tester. Could be used for some simple tasks.</div>
-        </div>
-      </a>
+<!-- Success toast -->
+<div id="successToast" class="toast">✅ Email subscribed successfully!</div>
 
-      <a href="services/converter.html">
-        <div class="service-card mdl-shadow--2dp">
-          <div class="service-title">Converter(TXT/JSON/YAML)</div>
-          <img class="service-image" src="/img/converter.png" alt="converter_img">
-          <div class="service-description">Simple converter from JSON -> TXT or TXT -> YARN.</div>
-        </div>
-      </a>
-    </div>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-    <div class="services-row">
-      <a href="services/weightgenerator.html">
-        <div class="service-card mdl-shadow--2dp">
-          <div class="service-title">Create file with weight</div>
-          <img class="service-image" src="/img/weight.png" alt="weight">
-          <div class="service-description">Create empty file with different foramts and custome file weight.</div>
+<div class="main-content">
+  <div class="services-row">
+    <a href="services/filegenerator.html">
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Csv generator</div>
+        <img class="service-image" src="/img/generator.png" alt="generator_img">
+        <div class="service-description">
+          Generate cvs files or other. Could be created with ready-made templates.
         </div>
-      </a>
-
-      <a href="services/email.html">
-        <div class="service-card mdl-shadow--2dp">
-          <div class="service-title">Temp email receiver</div>
-          <img class="service-image" src="/img/letter.png" alt="letter_img">
-          <div class="service-description">Temporary email for 10 minuts.</div>
+      </div>
+    </a>
+    <a href="services/apitester.html">
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">API online</div>
+        <img class="service-image" src="/img/api.png" alt="api_img">
+        <div class="service-description">
+          Online API tester. Could be used for some simple tasks.
         </div>
-      </a>
-    </div>
+      </div>
+    </a>
+    <a href="services/converter.html">
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Converter (TXT/JSON/YAML)</div>
+        <img class="service-image" src="/img/converter.png" alt="converter_img">
+        <div class="service-description">
+          Simple converter from JSON → TXT or TXT → YAML.
+        </div>
+      </div>
+    </a>
   </div>
 
-  <script>
-    const body = document.body;
-    const themeBtn = document.getElementById('themeToggle');
+  <div class="services-row">
+    <a href="services/weightgenerator.html">
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Create file with weight</div>
+        <img class="service-image" src="/img/weight.png" alt="weight">
+        <div class="service-description">
+          Create empty file with different formats and custom file weight.
+        </div>
+      </div>
+    </a>
+    <a href="services/email.html">
+      <div class="service-card mdl-shadow--2dp">
+        <div class="service-title">Temp email receiver</div>
+        <img class="service-image" src="/img/letter.png" alt="letter_img">
+        <div class="service-description">
+          Temporary email for 10 minutes.
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
 
-    function applyTheme(theme) {
-      body.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-      themeBtn.textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "web-service-app-5c2f6.firebaseapp.com",
+    databaseURL: "https://web-service-app-5c2f6-default-rtdb.firebaseio.com",
+    projectId: "web-service-app-5c2f6",
+    storageBucket: "web-service-app-5c2f6.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+
+  const body = document.body;
+  const themeBtn = document.getElementById('themeToggle');
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  function applyTheme(theme) {
+    body.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    themeBtn.textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
+  }
+  function toggleTheme() {
+    const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+  }
+  applyTheme(savedTheme);
+
+  // Modal logic
+  const subscribeBtn = document.getElementById('subscribeBtn');
+  const modal = document.getElementById('subscribeModal');
+  const spanClose = modal.querySelector('.close');
+  const form = document.getElementById('subscribeForm');
+  const toast = document.getElementById('successToast');
+
+  subscribeBtn.onclick = () => {
+    modal.style.display = "block";
+    form.reset();
+  };
+  spanClose.onclick = () => {
+    modal.style.display = "none";
+  };
+  window.onclick = (event) => {
+    if (event.target === modal) {
+      modal.style.display = "none";
     }
+  };
 
-    function toggleTheme() {
-      const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(newTheme);
-    }
+  form.onsubmit = function (e) {
+    e.preventDefault();
+    const email = document.getElementById('emailInput').value;
+    if (!email) return;
+    firebase.database().ref('subscribers').push({
+      email: email,
+      timestamp: new Date().toISOString()
+    })
+    .then(() => {
+      showToast();
+      modal.style.display = "none";
+    })
+    .catch((error) => {
+      alert("❌ Failed to subscribe: " + error.message);
+    });
+  };
 
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    applyTheme(savedTheme);
-  </script>
+  function showToast() {
+    toast.classList.add("show");
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3000);
+  }
+</script>
 
 </body>
 </html>
