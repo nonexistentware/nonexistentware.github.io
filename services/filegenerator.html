@@ -2,451 +2,285 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" type="text/css" href="/style/generatorstyle.css"/>
-  <script type="text/javascript" src="script/scvscript.js"></script>
-  <title>CSV Generator</title>
-  <!-- Favicon for browser tab -->
-  <link rel="icon" type="image/png" href="/img/favgear2.png" />
-  <!-- <style>
-   
- 
-  </style> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dynamic Table Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #ffffff;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background-color: #1a202c;
+      color: #e2e8f0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th input {
+      width: 100%;
+      padding: 4px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    button, select, input[type="number"] {
+      margin: 5px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      background-color: #676371;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #553c9a;
+    }
+
+    select, input[type="number"] {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+    }
+
+    body.dark select, body.dark input, body.dark button {
+      background-color: #4a5568;
+      color: #e2e8f0;
+      border-color: #718096;
+    }
+
+    #themeToggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    .controls {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>CSV Generator</h1>
-    <p>Create and export table data to different formats.</p>
+  <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
 
-    
-<div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
-  <label class="switch">
-    <input type="checkbox" id="theme-toggle" onchange="toggleTheme()" />
-    <span class="slider"></span>
-  </label>
-</div>
+  <div class="controls">
+    <select id="templateSelect">
+      <option value="">-- Select Template --</option>
+      <option value="orders">Orders</option>
+      <option value="products">Products</option>
+      <option value="payments">Payments</option>
+      <option value="cars">Cars</option>
+      <option value="users">Users</option>
+    </select>
 
-<div style="margin-bottom: 15px;">
-  <label for="row-count">Number of Rows:</label>
-  <input type="number" id="row-count" min="1" value="1" style="width: 60px; padding: 5px;" />
-  <button onclick="generateRows()">Generate Rows</button>
-</div>
+    <select id="formatSelect">
+      <option value="csv">CSV</option>
+      <option value="tsv">TSV</option>
+      <option value="json">JSON</option>
+      <option value="ndjson">NDJSON</option>
+      <option value="sql">SQL</option>
+      <option value="mongodb">MongoDB</option>
+      <option value="html">HTML Table</option>
+      <option value="xml">XML</option>
+      <option value="markdown">Markdown</option>
+      <option value="txt">TXT</option>
+      <option value="latex">LaTeX</option>
+    </select>
 
-<div style="margin-bottom: 15px;">
-  <label for="template">Template:</label>
-  <select id="template" onchange="applyTemplate()">
-    <option value="">-- Select Template --</option>
-    <option value="users">Users</option>
-    <option value="products">Products</option>
-    <option value="orders">Orders</option>
-    <option value="payments">Payments</option>
-    <option value="cars">Cars</option>
-  </select>
-</div>
-
-    <div class="table-wrapper">
-  <table id="data-table">
-    <thead>
-      <tr id="headers"></tr>
-    </thead>
-    <tbody id="table-body"></tbody>
-  </table>
-</div>
-
-
-
-    <button onclick="addColumn()">Add Column</button>
+    <input type="number" id="rowCount" value="5" min="1" />
+    <button onclick="generateRows()">Generate</button>
     <button onclick="addRow()">Add Row</button>
-
-
-    <div>
-      <label for="format">Format:</label>
-      <select id="format">
-        <option>CSV</option>
-        <option>SQL</option>
-        <option>MongoDB</option>
-        <option>JSON</option>
-        <option>NDJSON</option>
-        <option>JSONLines</option>
-        <option>TSV</option>
-        <option>HTML table</option>
-        <option>XML</option>
-        <option>Markdown table</option>
-        <option>TXT</option>
-        <option>LaTeX table</option>
-      </select>
-    </div>
-
-    <button onclick="generate()">Generate</button>
-    <pre id="output"></pre>
-    <button id="download-btn" onclick="download()" style="display: none;">Download</button>
-
+    <button onclick="addColumn()">Add Column</button>
+    <button onclick="downloadData()">Download</button>
   </div>
 
+  <table id="dataTable">
+    <thead><tr></tr></thead>
+    <tbody></tbody>
+  </table>
+
   <script>
-    let headers = ["Name", "Age", "City"];
-    let data = [
-      ["John", "30", "New York"],
-      ["Jane", "25", "London"]
-    ];
+    let headers = [];
+    let data = [];
+
+    const templates = {
+      orders: {
+        headers: ["Order ID", "Customer", "Date", "Status", "Total"],
+        row: () => [
+          "ORD" + Math.floor(Math.random() * 100000),
+          ["Alice", "Bob", "Charlie", "Diana"][Math.floor(Math.random() * 4)],
+          new Date(Date.now() - Math.random() * 1e10).toISOString().split('T')[0],
+          ["Pending", "Shipped", "Delivered", "Cancelled"][Math.floor(Math.random() * 4)],
+          (Math.random() * 500).toFixed(2)
+        ]
+      },
+      products: {
+        headers: ["Product ID", "Name", "Category", "Price", "Stock"],
+        row: () => [
+          "P" + Math.floor(Math.random() * 10000),
+          ["Laptop", "Phone", "Book", "Table", "Monitor"][Math.floor(Math.random() * 5)],
+          ["Electronics", "Furniture", "Office", "Clothing"][Math.floor(Math.random() * 4)],
+          (Math.random() * 1000).toFixed(2),
+          Math.floor(Math.random() * 100)
+        ]
+      },
+      payments: {
+        headers: ["Payment ID", "User", "Amount", "Method", "Status"],
+        row: () => [
+          "PAY" + Math.floor(Math.random() * 100000),
+          ["Alice", "Bob", "Eve", "Tom"][Math.floor(Math.random() * 4)],
+          (Math.random() * 2000).toFixed(2),
+          ["Card", "PayPal", "Bank Transfer"][Math.floor(Math.random() * 3)],
+          ["Completed", "Failed", "Refunded"][Math.floor(Math.random() * 3)]
+        ]
+      },
+      cars: {
+        headers: ["Car ID", "Brand", "Model", "Year", "Price"],
+        row: () => [
+          "CAR" + Math.floor(Math.random() * 100000),
+          ["Toyota", "Ford", "BMW", "Tesla"][Math.floor(Math.random() * 4)],
+          ["Model S", "Corolla", "Mustang", "X5"][Math.floor(Math.random() * 4)],
+          Math.floor(Math.random() * 30 + 1990),
+          (Math.random() * 50000 + 10000).toFixed(2)
+        ]
+      },
+      users: {
+        headers: ["User ID", "First Name", "Last Name", "Email", "Country", "Signup Date"],
+        row: () => {
+          const firstNames = ["Alice", "Bob", "Carol", "David", "Eve"];
+          const lastNames = ["Smith", "Johnson", "Brown", "Lee", "Taylor"];
+          const countries = ["USA", "UK", "Canada", "Germany", "France"];
+          const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+          const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+          return [
+            "USR" + Math.floor(Math.random() * 100000),
+            firstName,
+            lastName,
+            `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+            countries[Math.floor(Math.random() * countries.length)],
+            new Date(Date.now() - Math.random() * 1e10).toISOString().split('T')[0]
+          ];
+        }
+      }
+    };
+
+    document.getElementById("templateSelect").addEventListener("change", function () {
+      const selected = this.value;
+      if (templates[selected]) {
+        headers = templates[selected].headers.slice();
+        data = [];
+        for (let i = 0; i < 5; i++) data.push(templates[selected].row());
+        renderTable();
+      }
+    });
 
     function renderTable() {
-      const headersRow = document.getElementById("headers");
-      headersRow.innerHTML = "";
+      const thead = document.querySelector("#dataTable thead tr");
+      const tbody = document.querySelector("#dataTable tbody");
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+
       headers.forEach((header, i) => {
         const th = document.createElement("th");
         const input = document.createElement("input");
         input.value = header;
-        input.onchange = (e) => headers[i] = e.target.value;
+        input.onchange = () => headers[i] = input.value;
         th.appendChild(input);
-        headersRow.appendChild(th);
+        thead.appendChild(th);
       });
 
-      const tableBody = document.getElementById("table-body");
-      tableBody.innerHTML = "";
-      data.forEach((row, rowIndex) => {
+      data.forEach(row => {
         const tr = document.createElement("tr");
-        row.forEach((cell, colIndex) => {
+        row.forEach(cell => {
           const td = document.createElement("td");
-          const input = document.createElement("input");
-          input.value = cell;
-          input.oninput = (e) => data[rowIndex][colIndex] = e.target.value;
-          td.appendChild(input);
+          td.textContent = cell;
           tr.appendChild(td);
         });
-        tableBody.appendChild(tr);
+        tbody.appendChild(tr);
       });
-    }
-
-    function addColumn() {
-      headers.push("New Column");
-      data.forEach(row => row.push(""));
-      renderTable();
     }
 
     function addRow() {
-      data.push(Array(headers.length).fill(""));
+      data.push(headers.map(() => ""));
       renderTable();
     }
 
-    let lastGeneratedText = "";
-let lastFormat = "";
-
-function generate() {
-  const format = document.getElementById("format").value;
-  lastFormat = format;
-  let result = "";
-  switch (format) {
-    case "CSV":
-      result = [headers.join(",")].concat(data.map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(","))).join("\n");
-      break;
-    case "TSV":
-      result = [headers.join("\t")].concat(data.map(row => row.join("\t"))).join("\n");
-      break;
-    case "JSON":
-      result = JSON.stringify(data.map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]]))), null, 2);
-      break;
-    case "NDJSON":
-    case "JSONLines":
-      result = data.map(row => JSON.stringify(Object.fromEntries(headers.map((h, i) => [h, row[i]])))).join("\n");
-      break;
-    case "SQL":
-      result = data.map(row => `INSERT INTO table_name (${headers.join(", ")}) VALUES (${row.map(v => `'${v.replace(/'/g, "''")}'`).join(", ")});`).join("\n");
-      break;
-    case "MongoDB":
-      result = data.map(row => `db.collection.insertOne(${JSON.stringify(Object.fromEntries(headers.map((h, i) => [h, row[i]])))});`).join("\n");
-      break;
-    case "HTML table":
-      result = `<table><thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>` +
-        data.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`).join("") +
-        "</tbody></table>";
-      break;
-    case "XML":
-      result = "<rows>\n" + data.map(row => "  <row>" + headers.map((h, i) => `<${h}>${row[i]}</${h}>`).join("") + "</row>").join("\n") + "\n</rows>";
-      break;
-    case "Markdown table":
-      result = `| ${headers.join(" | ")} |\n| ${headers.map(() => "---").join(" | ")} |\n` +
-        data.map(row => `| ${row.join(" | ")} |`).join("\n");
-      break;
-    case "TXT":
-      result = [headers.join("\t")].concat(data.map(row => row.join("\t"))).join("\n");
-      break;
-    case "LaTeX table":
-      result = `\\begin{tabular}{|${"c|".repeat(headers.length)}}\n\\hline\n` +
-        `${headers.join(" & ")} \\\\ \\hline\n` +
-        data.map(row => `${row.join(" & ")} \\\\ \\hline`).join("\n") +
-        `\n\\end{tabular}`;
-      break;
-  }
-
-  lastGeneratedText = result;
-  document.getElementById("output").textContent = result;
-  document.getElementById("download-btn").style.display = "inline-block";
-
-}
-
-function generateRows() {
-  const rowCount = parseInt(document.getElementById("row-count").value);
-  if (isNaN(rowCount) || rowCount < 1) {
-    alert("Please enter a valid number of rows.");
-    return;
-  }
-
-  const selected = document.getElementById("template").value;
-
-  const rowGenerators = {
-    users: () => {
-  const firstNames = ["Alice", "Bob", "Carol", "David", "Eve"];
-  const lastNames = ["Smith", "Johnson", "Brown", "Lee", "Taylor"];
-  const countries = ["USA", "UK", "Canada", "Germany", "France"];
-
-  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-  const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-
-  return [
-    "USR" + Math.floor(Math.random() * 100000),
-    firstName,
-    lastName,
-    email,
-    countries[Math.floor(Math.random() * countries.length)],
-    new Date(Date.now() - Math.random() * 1e10).toISOString().split('T')[0]
-  ];
-},
-    products: () => [
-      "P" + Math.floor(Math.random() * 10000),
-      ["Laptop", "Phone", "Book", "Table", "Monitor"][Math.floor(Math.random() * 5)],
-      ["Electronics", "Furniture", "Office", "Clothing"][Math.floor(Math.random() * 4)],
-      (Math.random() * 1000).toFixed(2),
-      Math.floor(Math.random() * 100)
-    ],
-    orders: () => [
-      "ORD" + Math.floor(Math.random() * 100000),
-      ["Alice", "Bob", "Charlie", "Diana"][Math.floor(Math.random() * 4)],
-      new Date(Date.now() - Math.random() * 1e10).toISOString().split('T')[0],
-      ["Pending", "Shipped", "Delivered", "Cancelled"][Math.floor(Math.random() * 4)],
-      (Math.random() * 500).toFixed(2)
-    ],
-    payments: () => [
-      "PAY" + Math.floor(Math.random() * 100000),
-      ["Alice", "Bob", "Eve", "Tom"][Math.floor(Math.random() * 4)],
-      (Math.random() * 2000).toFixed(2),
-      ["Card", "PayPal", "Bank Transfer"][Math.floor(Math.random() * 3)],
-      ["Completed", "Failed", "Refunded"][Math.floor(Math.random() * 3)]
-    ],
-    cars: () => [
-      "CAR" + Math.floor(Math.random() * 100000),
-      ["Toyota", "Ford", "BMW", "Tesla"][Math.floor(Math.random() * 4)],
-      ["Model S", "Corolla", "Mustang", "X5"][Math.floor(Math.random() * 4)],
-      Math.floor(Math.random() * 30 + 1990),
-      (Math.random() * 50000 + 10000).toFixed(2)
-    ]
-  };
-
-  for (let i = 0; i < rowCount; i++) {
-    if (rowGenerators[selected]) {
-      data.push(rowGenerators[selected]());
-    } else {
-      data.push(Array(headers.length).fill("").map(() => Math.random().toString(36).substring(2, 8)));
+    function addColumn() {
+      headers.push("Column " + (headers.length + 1));
+      data = data.map(row => [...row, ""]);
+      renderTable();
     }
-  }
 
-  renderTable();
+    function generateRows() {
+      const count = parseInt(document.getElementById("rowCount").value, 10) || 1;
+      const selected = document.getElementById("templateSelect").value;
 
-  // Auto-download without preview
-  const format = document.getElementById("format").value;
-  const output = generateExport(format);
-  downloadBlob(output, `data.${getFileExtension(format)}`);
-}
-
-
-function generateExport(format) {
-  switch (format) {
-    case "CSV":
-      return [headers.join(",")].concat(data.map(row => row.join(","))).join("\n");
-    case "TSV":
-    case "TXT":
-      return [headers.join("\t")].concat(data.map(row => row.join("\t"))).join("\n");
-    case "JSON":
-      return JSON.stringify(data.map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]]))), null, 2);
-    case "NDJSON":
-    case "JSONLines":
-      return data.map(row => JSON.stringify(Object.fromEntries(headers.map((h, i) => [h, row[i]])))).join("\n");
-    case "SQL":
-      return data.map(row => `INSERT INTO table_name (${headers.join(", ")}) VALUES (${row.map(v => `'${v}'`).join(", ")});`).join("\n");
-    case "MongoDB":
-      return data.map(row => `db.collection.insertOne(${JSON.stringify(Object.fromEntries(headers.map((h, i) => [h, row[i]])))});`).join("\n");
-    case "HTML table":
-      return `<table><thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>` +
-             data.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`).join("") +
-             "</tbody></table>";
-    case "XML":
-      return "<rows>\n" + data.map(row => "  <row>" + headers.map((h, i) => `<${h}>${row[i]}</${h}>`).join("") + "</row>").join("\n") + "\n</rows>";
-    case "Markdown table":
-      return `| ${headers.join(" | ")} |\n| ${headers.map(() => "---").join(" | ")} |\n` +
-             data.map(row => `| ${row.join(" | ")} |`).join("\n");
-    case "LaTeX table":
-      return `\\begin{tabular}{|${"c|".repeat(headers.length)}}\n\\hline\n` +
-             `${headers.join(" & ")} \\\\ \\hline\n` +
-             data.map(row => `${row.join(" & ")} \\\\ \\hline`).join("\n") +
-             `\n\\end{tabular}`;
-    default:
-      return "";
-  }
-}
-
-function applyTemplate() {
-  const selected = document.getElementById("template").value;
-  const templates = {
-    users: {
-  headers: ["User ID", "First Name", "Last Name", "Email", "Country", "Signup Date"],
-  row: () => {
-    const firstNames = ["Alice", "Bob", "Carol", "David", "Eve"];
-    const lastNames = ["Smith", "Johnson", "Brown", "Lee", "Taylor"];
-    const countries = ["USA", "UK", "Canada", "Germany", "France"];
-
-    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-    const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-
-    return [
-      "USR" + Math.floor(Math.random() * 100000),
-      firstName,
-      lastName,
-      email,
-      countries[Math.floor(Math.random() * countries.length)],
-      new Date(Date.now() - Math.random() * 1e10).toISOString().split('T')[0]
-    ];
-  }
-},
-    products: {
-      headers: ["Product ID", "Name", "Category", "Price", "Stock"],
-      row: () => [
-        "P" + Math.floor(Math.random() * 10000),
-        ["Laptop", "Phone", "Book", "Table", "Monitor"][Math.floor(Math.random() * 5)],
-        ["Electronics", "Furniture", "Office", "Clothing"][Math.floor(Math.random() * 4)],
-        (Math.random() * 1000).toFixed(2),
-        Math.floor(Math.random() * 100)
-      ]
-    },
-    orders: {
-      headers: ["Order ID", "Customer", "Date", "Status", "Total"],
-      row: () => [
-        "ORD" + Math.floor(Math.random() * 100000),
-        ["Alice", "Bob", "Charlie", "Diana"][Math.floor(Math.random() * 4)],
-        new Date(Date.now() - Math.random() * 1e10).toISOString().split('T')[0],
-        ["Pending", "Shipped", "Delivered", "Cancelled"][Math.floor(Math.random() * 4)],
-        (Math.random() * 500).toFixed(2)
-      ]
-    },
-    payments: {
-      headers: ["Payment ID", "User", "Amount", "Method", "Status"],
-      row: () => [
-        "PAY" + Math.floor(Math.random() * 100000),
-        ["Alice", "Bob", "Eve", "Tom"][Math.floor(Math.random() * 4)],
-        (Math.random() * 2000).toFixed(2),
-        ["Card", "PayPal", "Bank Transfer"][Math.floor(Math.random() * 3)],
-        ["Completed", "Failed", "Refunded"][Math.floor(Math.random() * 3)]
-      ]
-    },
-    cars: {
-      headers: ["Car ID", "Brand", "Model", "Year", "Price"],
-      row: () => [
-        "CAR" + Math.floor(Math.random() * 100000),
-        ["Toyota", "Ford", "BMW", "Tesla"][Math.floor(Math.random() * 4)],
-        ["Model S", "Corolla", "Mustang", "X5"][Math.floor(Math.random() * 4)],
-        Math.floor(Math.random() * 30 + 1990),
-        (Math.random() * 50000 + 10000).toFixed(2)
-      ]
+      if (templates[selected]) {
+        for (let i = 0; i < count; i++) data.push(templates[selected].row());
+      } else {
+        for (let i = 0; i < count; i++) data.push(headers.map(() => ""));
+      }
+      renderTable();
     }
-  };
 
-  if (templates[selected]) {
-    headers = templates[selected].headers;
-    data = [];
-    for (let i = 0; i < 5; i++) {
-      data.push(templates[selected].row());
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+      const theme = document.body.classList.contains("dark") ? "dark" : "light";
+      document.getElementById("themeToggle").textContent = theme === "dark" ? "☀️ Theme" : "🌗 Theme";
     }
-    renderTable();
-  }
-}
 
-function downloadBlob(content, filename) {
-  const blob = new Blob([content], { type: "text/plain" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-}
+    function downloadData() {
+      const format = document.getElementById("formatSelect").value;
+      let content = "";
+      const escape = str => '"' + String(str).replace(/"/g, '""') + '"';
 
-function getFileExtension(format) {
-  switch (format) {
-    case "CSV": return "csv";
-    case "TSV": return "tsv";
-    case "JSON": return "json";
-    case "NDJSON":
-    case "JSONLines": return "ndjson";
-    case "SQL": return "sql";
-    case "MongoDB": return "js";
-    case "HTML table": return "html";
-    case "XML": return "xml";
-    case "Markdown table": return "md";
-    case "TXT": return "txt";
-    case "LaTeX table": return "tex";
-    default: return "txt";
-  }
-}
+      switch (format) {
+        case "csv":
+          content += headers.join(",") + "\n";
+          content += data.map(row => row.join(",")).join("\n");
+          break;
+        case "tsv":
+          content += headers.join("\t") + "\n";
+          content += data.map(row => row.join("\t")).join("\n");
+          break;
+        case "json":
+          content = JSON.stringify(data.map(row => Object.fromEntries(row.map((val, i) => [headers[i], val]))), null, 2);
+          break;
+        case "ndjson":
+          content = data.map(row => JSON.stringify(Object.fromEntries(row.map((val, i) => [headers[i], val])))).join("\n");
+          break;
+        case "txt":
+        case "markdown":
+          content = data.map(row => row.join(" | ")).join("\n");
+          break;
+        default:
+          content = "Format not implemented";
+      }
 
-
-
-  function download() {
-  if (!lastGeneratedText || !lastFormat) {
-    alert("Please generate output first.");
-    return;
-  }
-
-  const extensions = {
-    "CSV": "csv",
-    "TSV": "tsv",
-    "JSON": "json",
-    "NDJSON": "ndjson",
-    "JSONLines": "jsonl",
-    "SQL": "sql",
-    "MongoDB": "js",
-    "HTML table": "html",
-    "XML": "xml",
-    "Markdown table": "md",
-    "TXT": "txt",
-    "LaTeX table": "tex"
-  };
-
-  function toggleTheme() {
-    document.body.classList.toggle("dark");
-    const isDark = document.body.classList.contains("dark");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-  }
-
-  // Apply theme on load
-  window.addEventListener("DOMContentLoaded", () => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      document.body.classList.add("dark");
-      const toggle = document.getElementById("theme-toggle");
-      if (toggle) toggle.checked = true;
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `table.${format}`;
+      link.click();
     }
-  });
-
-  const ext = extensions[lastFormat] || "txt";
-  const blob = new Blob([lastGeneratedText], { type: "text/plain" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `output.${ext}`;
-  a.click();
-}
-
-
-
-    renderTable();
   </script>
 </body>
 </html>

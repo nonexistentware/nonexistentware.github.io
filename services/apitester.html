@@ -107,7 +107,11 @@ pre {
   right: 30px;
 }
 
-
+/* script attributes */
+textarea {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
 
   </style>
 </head>
@@ -160,6 +164,19 @@ pre {
   <input type="file" id="bodyFile" accept=".json"/>
   <button onclick="loadFileToTextarea('bodyFile', 'body')">Upload Body</button>
 
+  <h2>Scripting</h2>
+<div id="scriptRow" style="display: flex; gap: 20px; flex-wrap: wrap;">
+  <div style="flex: 1; min-width: 300px;">
+    <label for="preScript">Pre-request Script (JS):</label>
+    <textarea id="preScript" rows="6" placeholder="// e.g., modify headers, log time"></textarea>
+  </div>
+  <div style="flex: 1; min-width: 300px;">
+    <label for="postScript">Post-response Script (JS):</label>
+    <textarea id="postScript" rows="6" placeholder="// e.g., alert on status code, log response"></textarea>
+  </div>
+</div>
+
+
   <h2>Response</h2>
   <pre id="response" style="min-height: 4em;"></pre>
   <button id="downloadBtn" onclick="downloadResponse()">Download Response</button>
@@ -197,7 +214,30 @@ pre {
     }
 
     async function sendRequest() {
+//script pre request
+try {
+  const preScript = document.getElementById('preScript').value;
+  if (preScript.trim()) {
+    eval(preScript); // You can sandbox this later for safety
+  }
+} catch (e) {
+  alert("Error in pre-request script:\n" + e.message);
+  return;
+}
+
       document.getElementById('response').textContent = ""; // Clear old output
+
+//post script request
+try {
+  const postScript = document.getElementById('postScript').value;
+  if (postScript.trim()) {
+    eval(postScript);
+  }
+} catch (e) {
+  alert("Error in post-response script:\n" + e.message);
+}
+
+
       document.getElementById('downloadBtn').style.display = 'none'; // Hide download button
       const url = document.getElementById('url').value;
       const method = document.getElementById('method').value;
