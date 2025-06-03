@@ -115,7 +115,8 @@ textarea {
 
   </style>
 </head>
-<body >
+<body onload="toggleHeaderSection(); toggleBodyExtras();">
+
    <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
 
   <h1>API Tester</h1>
@@ -148,20 +149,18 @@ textarea {
     <button onclick="loadFileToTextarea('headersFile', 'headers')">Upload Headers</button>
   </div>
 
-  <label for="bodyType">Body Type:</label>
-<select id="bodyType">
+<label for="bodyType">Body Type:</label>
+<select id="bodyType" onchange="toggleBodyExtras()">
   <option value="json">JSON</option>
   <option value="xml">XML</option>
   <option value="text">Plain Text</option>
   <option value="html">HTML</option>
   <option value="javascript">JavaScript</option>
+  <option value="graphql">GraphQL</option>
 </select>
 
 <label for="body">Body Content:</label>
-
-
-  <textarea id="body" rows="6" placeholder='{"key": "value"}'></textarea>
-  <input type="file" id="bodyFile" accept=".json"/>
+<textarea id="body" rows="6" placeholder='{"key": "value"}'></textarea>
   <button onclick="loadFileToTextarea('bodyFile', 'body')">Upload Body</button>
 
   <h2>Scripting</h2>
@@ -174,6 +173,10 @@ textarea {
     <label for="postScript">Post-response Script (JS):</label>
     <textarea id="postScript" rows="6" placeholder="// e.g., alert on status code, log response"></textarea>
   </div>
+  <div id="graphqlVariablesSection" style="display: none;">
+  <label for="graphqlVariables">GraphQL Variables (JSON):</label>
+  <textarea id="graphqlVariables" rows="4" placeholder='{"id": 1}'></textarea>
+</div>
 </div>
 
 
@@ -190,6 +193,12 @@ textarea {
       const section = document.getElementById('headerSection');
       section.style.display = mode === 'custom' ? 'block' : 'none';
     }
+//graphql
+    function toggleBodyExtras() {
+    const bodyType = document.getElementById('bodyType').value;
+    const graphqlSection = document.getElementById('graphqlVariablesSection');
+    graphqlSection.style.display = bodyType === 'graphql' ? 'block' : 'none';
+}
 
     function loadFileToTextarea(fileInputId, textareaId) {
       const fileInput = document.getElementById(fileInputId);
@@ -262,7 +271,8 @@ try {
       };
 
       // Add body for POST/PUT/PATCH if present
-      const bodyType = document.getElementById('bodyType').value;
+     const bodyType = document.getElementById('bodyType').value;
+const graphqlVars = document.getElementById('graphqlVariables')?.value;
 
 if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && typeof bodyValue === 'string' && bodyValue.trim()) {
   if (bodyType === 'json') {
@@ -271,6 +281,18 @@ if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && typeof bodyValue 
       headers['Content-Type'] = 'application/json';
     } catch (e) {
       alert("Invalid JSON in body");
+      return;
+    }
+  } else if (bodyType === 'graphql') {
+    try {
+      const variables = graphqlVars?.trim() ? JSON.parse(graphqlVars) : {};
+      options.body = JSON.stringify({
+        query: bodyValue,
+        variables: variables
+      });
+      headers['Content-Type'] = 'application/json';
+    } catch (e) {
+      alert("Invalid JSON in GraphQL variables");
       return;
     }
   } else {
@@ -284,6 +306,7 @@ if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && typeof bodyValue 
     headers['Content-Type'] = contentTypeMap[bodyType] || 'text/plain';
   }
 }
+
 
       try {
         const res = await fetch(url, options);
