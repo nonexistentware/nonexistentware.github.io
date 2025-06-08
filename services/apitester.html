@@ -108,10 +108,10 @@ pre {
 }
 
 /* script attributes */
-textarea {
+/* textarea {
   background-color: var(--input-bg);
   color: var(--input-text);
-}
+} */
 
   </style>
 </head>
@@ -123,11 +123,16 @@ textarea {
 
   <label for="url">API URL:</label>
   <input type="text" id="url" placeholder="https://api.example.com/data"/>
-
   <br>
   <button onclick="sendRequest()">Send Request</button>
 
-  <label for="method">Method:</label>
+  <label>
+    Use CORS Proxy: </br>
+  <input type="checkbox" id="useCorsProxy" onchange="toggleCorsProxy()">
+  
+</label>
+
+  <label for="method">Method:</label> 
   <select id="method">
     <option>GET</option>
     <option>POST</option>
@@ -150,7 +155,7 @@ textarea {
   </div>
 
 <label for="bodyType">Body Type:</label>
-<select id="bodyType" onchange="toggleBodyExtras()">
+<select id="bodyType" onchange="toggleBodyExtras(); handleXmlPreset();">
   <option value="json">JSON</option>
   <option value="xml">XML</option>
   <option value="text">Plain Text</option>
@@ -227,12 +232,13 @@ textarea {
 try {
   const preScript = document.getElementById('preScript').value;
   if (preScript.trim()) {
-    eval(preScript); // You can sandbox this later for safety
+    new Function(preScript)(); // More controlled and isolated
   }
 } catch (e) {
   alert("Error in pre-request script:\n" + e.message);
   return;
 }
+
 
       document.getElementById('response').textContent = ""; // Clear old output
 
@@ -296,15 +302,15 @@ if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && typeof bodyValue 
       return;
     }
   } else {
-    options.body = bodyValue;
-    const contentTypeMap = {
-      xml: 'application/xml',
-      text: 'text/plain',
-      html: 'text/html',
-      javascript: 'application/javascript'
-    };
-    headers['Content-Type'] = contentTypeMap[bodyType] || 'text/plain';
-  }
+  options.body = bodyValue;
+  const contentTypeMap = {
+    xml: 'text/xml',
+    text: 'text/plain',
+    html: 'text/html',
+    javascript: 'application/javascript'
+  };
+  headers['Content-Type'] = contentTypeMap[bodyType] || 'text/plain';
+}
 }
 
 
@@ -332,6 +338,74 @@ if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && typeof bodyValue 
         document.getElementById('downloadBtn').style.display = 'inline-block';
       }
     }
+
+    //soap 
+   function handleXmlPreset() {
+      const bodyType = document.getElementById('bodyType').value;
+      const urlInput = document.getElementById('url');
+      const bodyInput = document.getElementById('body');
+
+      if (bodyType === 'xml') {
+        const isEmpty = !urlInput.value.trim() && !bodyInput.value.trim();
+        if (isEmpty) {
+          urlInput.value = 'https://cors-anywhere.herokuapp.com/';
+          document.getElementById('method').value = 'POST';
+
+         const soapAction = urlInput.value.trim();
+
+        document.getElementById('headers').value = JSON.stringify({
+        "Content-Type": "text/xml; charset=utf-8",
+        "SOAPAction": soapAction
+        }, null, 2);
+
+          document.getElementById('headerMode').value = 'custom';
+          toggleHeaderSection();
+
+          bodyInput.value = `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n  <soap:Body>\n    <ListOfCountryNamesByName xmlns="http://www.oorsprong.org/websamples.countryinfo">\n    </ListOfCountryNamesByName>\n  </soap:Body>\n</soap:Envelope>`;
+        }
+      }
+    }
+
+
+//cors proxy 
+function handleXmlPreset() {
+  const bodyType = document.getElementById('bodyType').value;
+  const bodyInput = document.getElementById('body');
+  const headerInput = document.getElementById('headers');
+  const urlInput = document.getElementById('url');
+
+  if (bodyType === 'xml') {
+    document.getElementById('method').value = 'POST';
+    document.getElementById('headerMode').value = 'custom';
+    toggleHeaderSection();
+
+    const currentUrl = urlInput.value.trim();
+    const soapAction = ""; // Empty default; user can edit
+
+    headerInput.value = JSON.stringify({
+      "Content-Type": "text/xml; charset=utf-8",
+      "SOAPAction": soapAction
+    }, null, 2);
+
+    if (!bodyInput.value.trim()) {
+      bodyInput.value = `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n  <soap:Body>\n    <!-- Replace with your SOAP method -->\n  </soap:Body>\n</soap:Envelope>`;
+    }
+  }
+}
+
+//cors logic 
+function toggleCorsProxy() {
+  const checkbox = document.getElementById('useCorsProxy');
+  const urlInput = document.getElementById('url');
+  const rawUrl = urlInput.value.replace(/^https:\/\/cors-anywhere\.herokuapp\.com\//, '');
+
+  if (checkbox.checked) {
+    urlInput.value = `https://cors-anywhere.herokuapp.com/${rawUrl}`;
+  } else {
+    urlInput.value = rawUrl;
+  }
+}
+
 
     function downloadResponse() {
       const blob = new Blob([latestResponseText], {
