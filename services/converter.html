@@ -63,16 +63,46 @@ button {
 
 /* Theme button specific styling */
 #themeToggle {
-  align-self: flex-end;
-  margin-bottom: 10px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 8px 14px;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
   background-color: #e0e0e0;
   color: #000000;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 body.dark #themeToggle {
   background-color: #444444;
   color: #ffffff;
 }
+
+body {
+  background-color: #ffffff;
+  color: #000000;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+textarea {
+  background-color: #ffffff;
+  color: #000000;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark textarea {
+  background-color: #2e2e2e;
+  color: #ffffff;
+}
+
+
 
 </style>
 
@@ -259,16 +289,33 @@ body.dark #themeToggle {
     URL.revokeObjectURL(url);
   }
 
- function toggleTheme() {
+ function applyTheme(theme) {
   const body = document.body;
   const themeToggle = document.getElementById('themeToggle');
 
-  const isDark = body.classList.toggle('dark');
-  const theme = isDark ? 'dark' : 'light';
+  if (theme === 'dark') {
+    body.classList.add('dark');
+  } else {
+    body.classList.remove('dark');
+  }
 
   themeToggle.textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
 }
 
+function toggleTheme() {
+  const body = document.body;
+  const isDark = body.classList.contains('dark');
+  const newTheme = isDark ? 'light' : 'dark';
+  localStorage.setItem('theme', newTheme);
+  applyTheme(newTheme);
+}
+
+// 🔁 Apply saved theme on load
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  applyTheme(savedTheme);
+  updateFileAccept(); // your function for file format setup
+});
 
   window.onload = updateFileAccept;
 </script>
