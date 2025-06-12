@@ -116,11 +116,11 @@ body.dark textarea {
   <div class="container">
     <div class="panel">
       <label for="inputFormat">Input Format:</label>
-      <select id="inputFormat" onchange="updateFileAccept()">
-        <option value="text">Text</option>
-        <option value="json">JSON</option>
-        <option value="yaml">YAML</option>
-      </select>
+<select id="inputFormat" onchange="updateFileAccept(); validateFormatSelection('input')">
+  <option value="text">Text</option>
+  <option value="json">JSON</option>
+  <option value="yaml">YAML</option>
+</select>
       <textarea id="inputText" placeholder="Enter text here..."></textarea>
       <input type="file" id="uploadFile" onchange="toggleUploadButton()">
         <button id="uploadButton" onclick="handleFileUpload()" style="display: none;">Upload</button>
@@ -129,11 +129,11 @@ body.dark textarea {
 
     <div class="panel">
       <label for="outputFormat">Output Format:</label>
-      <select id="outputFormat">
-        <option value="text">Text</option>
-        <option value="json">JSON</option>
-        <option value="yaml">YAML</option>
-      </select>
+<select id="outputFormat" onchange="validateFormatSelection('output')">
+  <option value="text">Text</option>
+  <option value="json">JSON</option>
+  <option value="yaml">YAML</option>
+</select>
       <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
       <button id="downloadButton" style="display:none;" onclick="downloadOutput()">Download</button>
     </div>
@@ -149,13 +149,24 @@ body.dark textarea {
   uploadButton.style.display = fileInput.files.length > 0 ? 'inline-block' : 'none';
 }  
 
+  //updated method 
   function convertText() {
   const inputFormat = document.getElementById('inputFormat').value;
   const outputFormat = document.getElementById('outputFormat').value;
-  const inputText = document.getElementById('inputText').value;
+  const inputText = document.getElementById('inputText').value.trim();
+  const downloadButton = document.getElementById('downloadButton');
 
+  // 🚫 No input? Don't proceed
+  if (!inputText) {
+    alert('Please enter input data before converting.');
+    downloadButton.style.display = 'none';
+    return;
+  }
+
+  // 🚫 Same format check (double guard)
   if (inputFormat === outputFormat) {
     alert('Input and output formats must be different.');
+    downloadButton.style.display = 'none';
     return;
   }
 
@@ -167,29 +178,28 @@ body.dark textarea {
     } else if (inputFormat === 'yaml') {
       intermediateData = jsyaml.load(inputText);
     } else {
-      // Text input: try parsing directly first
-      const cleanedText = inputText.trim();
+      // Input is text — try parsing directly
+      let unescaped = inputText;
 
       try {
-        intermediateData = JSON.parse(cleanedText);
+        intermediateData = JSON.parse(unescaped);
       } catch (e1) {
         try {
-          intermediateData = jsyaml.load(cleanedText);
+          intermediateData = jsyaml.load(unescaped);
         } catch (e2) {
-          // Try unescaping only if both failed
+          // Try to unescape only if both failed
           try {
-            const safelyEscaped = JSON.parse(`"${cleanedText
+            const safe = JSON.parse(`"${unescaped
               .replace(/\\/g, '\\\\')
               .replace(/"/g, '\\"')
               .replace(/\n/g, '\\n')
               .replace(/\r/g, '\\r')}"`);
 
             try {
-              intermediateData = JSON.parse(safelyEscaped);
+              intermediateData = JSON.parse(safe);
             } catch (e3) {
-              intermediateData = jsyaml.load(safelyEscaped);
+              intermediateData = jsyaml.load(safe);
             }
-
           } catch (e4) {
             throw new Error("Text input must be valid stringified JSON or YAML.");
           }
@@ -217,12 +227,43 @@ body.dark textarea {
     }
 
     document.getElementById('outputText').value = outputText;
-    document.getElementById('downloadButton').style.display = 'inline-block';
+    downloadButton.style.display = 'inline-block';
 
   } catch (error) {
     alert('Conversion error: ' + error.message);
+    downloadButton.style.display = 'none';
   }
 }
+
+
+//update opposit format selection
+function onFormatChange(changed) {
+  const inputSelect = document.getElementById('inputFormat');
+  const outputSelect = document.getElementById('outputFormat');
+
+  const inputVal = inputSelect.value;
+  const outputVal = outputSelect.value;
+
+  if (changed === 'input') {
+    // If same, auto-change output
+    if (inputVal === outputVal) {
+      outputSelect.value = getAlternativeFormat(inputVal);
+    }
+    updateFileAccept(); // for upload input file type
+  } else {
+    // If same, auto-change input
+    if (inputVal === outputVal) {
+      inputSelect.value = getAlternativeFormat(outputVal);
+      updateFileAccept();
+    }
+  }
+}
+
+function getAlternativeFormat(current) {
+  const formats = ['text', 'json', 'yaml'];
+  return formats.find(f => f !== current);
+}
+
 
 
   function updateFileAccept() {
@@ -318,6 +359,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
   window.onload = updateFileAccept;
+  onFormatChange('input');
 </script>
 
 </body>

@@ -186,7 +186,12 @@ body.dark .modal-content {
   
 
 <!--  -->
-  <div class="email-box" id="email-address">Loading...</div>
+  <div class="email-box">
+  <span id="email-address">Loading...</span>
+  <button id="copy-btn" title="Copy email" onclick="copyEmail()" style="margin-left: 10px;">📋</button>
+  <span id="copy-status" style="font-size: 14px; color: green; display: none;">✅ Copied</span>
+</div>
+
   <div class="warning">⚠️ Don't reload the page, if you don't want to generate new mailbox.</div>
   <div>Expires in: <span id="time-left">10:00</span></div>
   <button onclick="resetTimer()">Give me 10 more minutes</button>
@@ -212,6 +217,9 @@ body.dark .modal-content {
     let seenMessageIds = new Set();
     let messageCache = {};
     let theme = localStorage.getItem('theme') || 'light';
+
+    let endTime; // Date.now() + 10*60*1000
+
 
     function applyTheme() {
       document.body.classList.toggle('dark', theme === 'dark');
@@ -367,7 +375,17 @@ function sanitizeFilename(name) {
   return name.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0, 50);
 }
 
-
+//copy email address 
+function copyEmail() {
+  const email = document.getElementById("email-address").textContent;
+  navigator.clipboard.writeText(email).then(() => {
+    const status = document.getElementById("copy-status");
+    status.style.display = "inline";
+    setTimeout(() => {
+      status.style.display = "none";
+    }, 1500);
+  });
+}
 
 // 
 function openModal(htmlContent) {
@@ -401,28 +419,35 @@ function handleEscape(e) {
       document.getElementById("time-left").textContent = `${min}:${sec}`;
     }
 
-    function countdown() {
-      timer--;
-      updateTimerDisplay();
-      if (timer <= 0) {
-        clearInterval(intervalId);
-        clearInterval(pollId);
-        startApp();
-      }
-    }
+    //updated 
+    function updateTimerDisplay() {
+  const now = Date.now();
+  const diff = Math.max(0, endTime - now);
+  const min = String(Math.floor(diff / 60000)).padStart(2, '0');
+  const sec = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+  document.getElementById("time-left").textContent = `${min}:${sec}`;
 
-    function resetTimer() {
-      timer = 600;
-      updateTimerDisplay();
-    }
+  if (diff <= 0) {
+    clearInterval(intervalId);
+    clearInterval(pollId);
+    startApp();
+  }
+}
+
+function resetTimer() {
+  endTime = Date.now() + 10 * 60 * 1000;
+  updateTimerDisplay();
+}
+
 
     async function startApp() {
-      await createTempEmail();
-      timer = 600;
-      updateTimerDisplay();
-      intervalId = setInterval(countdown, 1000);
-      pollId = setInterval(fetchMessages, 5000);
-    }
+  await createTempEmail();
+  endTime = Date.now() + 10 * 60 * 1000;
+  updateTimerDisplay();
+  intervalId = setInterval(updateTimerDisplay, 1000);
+  pollId = setInterval(fetchMessages, 5000);
+}
+
 
 //     window.addEventListener("beforeunload", function (e) {
 //   e.preventDefault();
