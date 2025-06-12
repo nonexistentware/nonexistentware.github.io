@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>What's New</title>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3130365157346913"
+     crossorigin="anonymous"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.light {
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    body.dark {
+      background-color: #1e1e1e;
+      color: #eee;
+    }
+
+    .centered-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 100%;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 24px;
+    }
+
+    #updatesContainer {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .update {
+      background: white;
+      color: black;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    body.dark .update {
+      background: #2c2c2c;
+      color: #f0f0f0;
+    }
+
+    .update-title {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 8px;
+    }
+
+    .update-date {
+      color: gray;
+      font-size: 0.9em;
+      margin-bottom: 8px;
+    }
+
+    .update-description {
+      line-height: 1.4;
+    }
+
+    #themeToggle {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 6px 12px;
+      font-size: 1rem;
+      background: transparent;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark #themeToggle {
+      color: white;
+      border-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
+  <div class="centered-container">
+    <h1>What's New</h1>
+    <div id="updatesContainer">Loading updates...</div>
+  </div>
+
+  <script>
+    // Theme toggle logic
+    const themeBtn = document.getElementById("themeToggle");
+    const currentTheme = localStorage.getItem("theme") || "light";
+    document.body.classList.add(currentTheme);
+    themeBtn.textContent = currentTheme === "dark" ? "☀️ Theme" : "🌗 Theme";
+
+    function toggleTheme() {
+      const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
+      document.body.classList.remove("light", "dark");
+      document.body.classList.add(newTheme);
+      localStorage.setItem("theme", newTheme);
+      themeBtn.textContent = newTheme === "dark" ? "☀️ Theme" : "🌗 Theme";
+    }
+  </script>
+
+  <!-- Firebase logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBsqllaKQSVQw_8yyLH7psWwfLGiHeBOGo",
+      authDomain: "web-service-app-5c2f6.firebaseapp.com",
+      databaseURL: "https://web-service-app-5c2f6-default-rtdb.firebaseio.com",
+      projectId: "web-service-app-5c2f6",
+      storageBucket: "web-service-app-5c2f6.appspot.com",
+      messagingSenderId: "774901817036",
+      appId: "1:774901817036:web:4a7cc9b5d059be50796c69",
+      measurementId: "G-M21R1G98QS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const updatesRef = ref(database, "whatsNew");
+    const updatesContainer = document.getElementById("updatesContainer");
+
+    onValue(updatesRef, (snapshot) => {
+      const data = snapshot.val();
+      updatesContainer.innerHTML = "";
+      if (data) {
+        const updates = Object.values(data).sort((a, b) => new Date(b.date) - new Date(a.date));
+        updates.forEach(update => {
+          const div = document.createElement("div");
+          div.className = "update";
+          div.innerHTML = `
+            <div class="update-title">${update.title}</div>
+            <div class="update-date">${update.date}</div>
+            <div class="update-description">${update.description}</div>
+          `;
+          updatesContainer.appendChild(div);
+        });
+      } else {
+        updatesContainer.innerText = "No updates available.";
+      }
+    }, (error) => {
+      console.error("Failed to load updates:", error);
+      updatesContainer.innerText = "Error loading updates.";
+    });
+  </script>
+</body>
+</html>
