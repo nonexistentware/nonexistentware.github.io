@@ -66,6 +66,12 @@
       margin-bottom: 8px;
     }
 
+    .update-version {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 8px;
+    }
+
     .update-date {
       color: gray;
       font-size: 0.9em;
@@ -150,6 +156,7 @@
           div.innerHTML = `
             <div class="update-title">${update.title}</div>
             <div class="update-description">${update.description}</div>
+            <dei cass="update-version">${update.version}</dei>
             <div class="update-date">${update.date}</div>
           `;
           updatesContainer.appendChild(div);
