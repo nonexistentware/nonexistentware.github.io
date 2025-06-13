@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link rel="stylesheet" href="/style/taskstyle.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+</head>
+<body>
+  <div class="login-container">
+    <h2 id="login-title">Login</h2>
+    <input id="username" type="text" placeholder="Username" style="display: none;">
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button id="confirm-button" onclick="confirmAction()">Login</button>
+<button id="signupBtn" onclick="setMode('signup')">Sign Up</button>
+<button id="resetBtn" onclick="setMode('reset')">Forgot Password</button>
+<button id="loginBtn" onclick="setMode('login')" style="display: none;">Login</button>
+  </div>
+  
+  <script src="/config/firebase-config.js"></script>
+  <script type="module" src="/script/auth.js"></script>
+
+</body>
+</html>
