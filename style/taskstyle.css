@@ -115,11 +115,11 @@ body {
 
 .app-header button {
   padding: 0.5rem 1rem;
-  background-color: #000000;
-  color: white;
+  background-color: #763b3b00; /* transparent */
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  color: black; /* default for light theme */
 }
 
 .calendar-controls {
@@ -182,8 +182,6 @@ body {
   background: none;
   color: black;
 }
-
-
 
 .task-item {
   background-color: #e3f2fd;
@@ -261,9 +259,110 @@ textarea {
   line-height: 1.4;
 }
 
+/* dark theme  */
+
+body.dark {
+      background-color: #121212;
+      color: #f1f1f1;
+    }
+
+    body.dark .day-column {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+    }
+
+    body.dark .day-header {
+      color: #f1f1f1;
+    }
+
+    body.dark .task-item {
+      background-color: #2a2a2a;
+      border-left-color: #555;
+      color: #f1f1f1;
+    }
+
+    body.dark .popup {
+      background-color: #2a2a2a;
+      color: #f1f1f1;
+    }
+
+    body.dark .popup input,
+    body.dark .popup textarea,
+    body.dark .popup select {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+      border: 1px solid #555;
+    }
+
+    .app-header {
+      padding: 1rem;
+      background: #ffffff;
+      color: rgb(0, 0, 0);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    body.dark .app-header {
+      background: #1e1e1e;
+      color: #f1f1f1;
+    }
+
+    .app-header-controls button {
+  background: none;
+  border: none;
+  color: black;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+body.dark .app-header-controls button {
+  color: white;
+}
 
 
+    #themeToggle {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      color: black;
+    }
 
+    body.dark #themeToggle {
+      color: white;
+    }
+
+    .logout-btn {
+  all: unset; /* resets everything: background, border, padding, etc. */
+  font-size: 1rem;
+  cursor: pointer;
+  color: black;
+}
+
+body.dark .logout-btn {
+  color: white;
+}
+
+
+body.dark .day-header {
+  color: white;
+}
+
+.day-header {
+  color: black; /* default for light theme */
+}
+
+body.dark .day-header {
+  color: white !important;
+}
+
+.day-header {
+  color: black; /* light theme default */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
 
 
 

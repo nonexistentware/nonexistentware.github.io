@@ -11,6 +11,8 @@
 </head>
 <body>
 
+  <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
+
   <h2 id="login-title">Login</h2>
   <input id="username" type="text" placeholder="Username" style="display: none;" />
   <input id="email" type="email" placeholder="Email" />
@@ -22,6 +24,16 @@
 
   <script src="config/firebase-config.js"></script>
   <script type="module" src="/script/auth.js"></script>
+  <script>
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      document.getElementById("themeToggle").textContent = isDark ? "☀️ Theme" : "🌗 Theme";
+    }
 
+    const currentTheme = localStorage.getItem("theme") || "light";
+    if (currentTheme === "dark") document.body.classList.add("dark");
+    document.getElementById("themeToggle").textContent = currentTheme === "dark" ? "☀️ Theme" : "🌗 Theme";
+  </script>
 </body>
 </html>
