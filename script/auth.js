@@ -3,7 +3,9 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
-  updateProfile
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 const loginContainer = document.querySelector('.login-container');
@@ -73,3 +75,17 @@ window.confirmAction = () => {
       .catch(err => alert(err.message));
   }
 };
+
+const googleBtn = document.getElementById('googleLoginBtn');
+if (googleBtn) {
+  googleBtn.addEventListener('click', async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      // Redirect to app page after login
+      window.location.href = 'app.html';
+    } catch (error) {
+      alert("Google sign-in failed: " + error.message);
+    }
+  });
+}

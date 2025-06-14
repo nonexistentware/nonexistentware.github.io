@@ -22,6 +22,15 @@
   <button id="resetBtn" onclick="setMode('reset')">Forgot Password</button>
   <button id="loginBtn" onclick="setMode('login')" style="display: none;">Login</button>
 
+  <!-- google login btn -->
+   <div id="social-login">
+  <p>Social Login</p>
+  <button id="googleLoginBtn" class="google-btn">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+    Sign in with Google
+  </button>
+</div>
+
   <script src="config/firebase-config.js"></script>
   <script type="module" src="/script/auth.js"></script>
   <script>
