@@ -97,6 +97,14 @@ header {
   border-radius: 8px;
 }
 
+.popup-buttons button {
+  color: black; /* Light theme */
+}
+
+body.dark .popup-buttons button {
+  color: white !important;
+}
+
 .hidden {
   display: none;
 }

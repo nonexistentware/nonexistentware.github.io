@@ -202,11 +202,13 @@ function onDrop(e, toDate) {
   const { id, from } = JSON.parse(e.dataTransfer.getData('text/plain'));
   get(ref(db, `users/${uid()}/tasks/${from}/${id}`)).then(snapshot => {
     const data = snapshot.val();
-    data.updatedAt = new Date().toISOString();
+
+    // Do NOT change updatedAt or createdAt
     remove(ref(db, `users/${uid()}/tasks/${from}/${id}`));
     set(ref(db, `users/${uid()}/tasks/${toDate}/${id}`), data).then(() => renderWeek());
   });
 }
+
 
 window.logout = () => {
   signOut(auth).then(() => window.location.href = 'login.html');

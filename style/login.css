@@ -12,11 +12,13 @@ body {
 }
 
 input, button {
-  padding: 0.6rem;
+  width: 301px;
+  height: 39px;
+  padding: 0.4rem;
   font-size: 1rem;
-  width: 280px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 button {
@@ -29,6 +31,7 @@ button {
 button:hover {
   background-color: #333;
 }
+
 
 body.dark {
       background-color: #121212;
@@ -56,3 +59,10 @@ body.dark #themeToggle {
   color: white;
 }
 
+input[type="text"], select, input[type="color"] {
+    padding: 0.8rem;
+    width: 309px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
