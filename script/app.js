@@ -6,7 +6,11 @@ import {
   reauthenticateWithCredential,
   updateEmail,
   sendEmailVerification,
-  deleteUser
+  deleteUser,
+  GoogleAuthProvider,
+  reauthenticateWithPopup,
+  initializeAuth,
+  browserPopupRedirectResolver
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import {
   ref,
@@ -16,6 +20,16 @@ import {
   remove
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
+const firebaseConfig = {
+ apiKey: "AIzaSyDqTYRWnOALyjALg2Y5wSoCySoD9POoFjE",
+    authDomain: "web-note-app-f928e.firebaseapp.com",
+    projectId: "web-note-app-f928e",
+    storageBucket: "web-note-app-f928e.firebasestorage.app",
+    messagingSenderId: "639121324059",
+    appId: "1:639121324059:web:cbfaf64e008fd94b60a0be",
+    measurementId: "G-CFPSHZSRZ5"
+};
+
 // ✅ Add this immediately after the imports
 // Priority: Firebase > localStorage > default
 let userSettings = {
@@ -24,6 +38,7 @@ let userSettings = {
   defaultStatus: localStorage.getItem('defaultStatus') || 'Planned',
   defaultPriority: localStorage.getItem('defaultPriority') || 'Medium'
 };
+
 
 
 const uid = () => auth.currentUser?.uid;
@@ -301,31 +316,68 @@ window.changeEmail = async function changeEmail() {
 
 
 //account delete
-window.deleteAccount = async function deleteAccount() {
-  const pwd = document.getElementById('confirmPassword').value;
-  if (!pwd.trim()) return alert("Enter your password to confirm.");
+window.deleteAccount = async function() {
+  const user = auth.currentUser;
+  if (!user) return alert("Not logged in.");
 
   try {
-    const user = auth.currentUser;
-    const credential = EmailAuthProvider.credential(user.email, pwd);
-    await reauthenticateWithCredential(user, credential);
+    const providerId = user.providerData[0]?.providerId;
+    if (providerId === 'google.com') {
+      await reauthenticateWithPopup(user, new GoogleAuthProvider());
+    } else {
+      const pwd = document.getElementById('confirmPassword')?.value;
+      if (!pwd) return alert("Enter password.");
+      const cred = EmailAuthProvider.credential(user.email, pwd);
+      await reauthenticateWithCredential(user, cred);
+    }
 
-    // Remove user's tasks
-    await remove(ref(db, `users/${uid()}/tasks`));
-
-    // Delete user account
+    await remove(ref(db, `users/${user.uid}/tasks`));
     await deleteUser(user);
-
-    alert("Account and all tasks deleted.");
+    alert("Account and tasks deleted.");
     window.location.href = 'login.html';
-  } catch (error) {
-    console.error(error);
-    const msg = error.code === 'auth/requires-recent-login'
-      ? 'Re-login required—please sign in again before deleting.'
-      : error.message;
-    alert(msg);
+  } catch (e) {
+    console.error(e);
+    alert(e.code === 'auth/requires-recent-login'
+      ? 'Re-auth required.'
+      : e.message);
   }
 };
+
+// window.deleteAccount = async function deleteAccount() {
+//   const user = auth.currentUser;
+//   if (!user) return alert("Not logged in.");
+
+//   try {
+//     const providerId = user.providerData[0]?.providerId;
+
+//     if (providerId === 'google.com') {
+//       const provider = new GoogleAuthProvider();
+//       await reauthenticateWithPopup(auth, provider);
+//     } else {
+//       const pwd = document.getElementById('confirmPassword')?.value.trim();
+//       if (!pwd) return alert("Enter your password to confirm deletion.");
+//       const credential = EmailAuthProvider.credential(user.email, pwd);
+//       await reauthenticateWithCredential(auth, credential);
+//     }
+
+//     await remove(ref(db, `users/${user.uid}/tasks`));
+//     await deleteUser(user);
+//     alert("Account and all tasks deleted.");
+//     window.location.href = 'login.html';
+
+//   } catch (error) {
+//     console.error(error);
+//     const code = error.code;
+//     if (code === 'auth/popup-closed-by-user') {
+//       return alert("Popup closed — account was not deleted.");
+//     } else if (code === 'auth/requires-recent-login') {
+//       return alert("Please sign in again before trying to delete your account.");
+//     }
+//     alert(error.message);
+//   }
+// };
+
+
 
 //verify current email 
 async function verifyCurrentUserEmail() {
