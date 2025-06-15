@@ -49,9 +49,16 @@ function getCurrentWeekDates(offset = 0) {
   });
 }
 
+//updated render
 function renderWeek() {
+//updated 
+if (!weekGrid || !weekLabel) {
+  console.error('Missing #weekGrid or #weekLabel in DOM');
+  return;
+}
   const dates = getCurrentWeekDates(weekOffset);
-  weekLabel.textContent = dates[0].toDateString() + ' – ' + dates[6].toDateString();
+  const weekNumber = getISOWeekNumber(dates[0]);
+  weekLabel.textContent = `Week ${weekNumber} — ${dates[0].toDateString()} – ${dates[6].toDateString()}`;
   weekGrid.innerHTML = '';
 
   dates.forEach(date => {
@@ -71,10 +78,45 @@ function renderWeek() {
   });
 }
 
+window.addEventListener('DOMContentLoaded', () => {
+  const filterSelect = document.getElementById('statusFilter');
+  if (filterSelect) {
+    filterSelect.addEventListener('change', () => {
+      renderWeek(); // re-renders the week when status filter changes
+    });
+  }
+});
+
+//added fnction for redner 
+function getISOWeekNumber(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+//jump to date
+window.jumpToDate = () => {
+  const input = document.getElementById('jumpDateInput');
+  if (!input.value) return;
+  const target = new Date(input.value);
+  const today = new Date();
+  const diffDays = Math.floor((target - today) / (1000 * 60 * 60 * 24));
+  weekOffset = Math.floor(diffDays / 7);
+  renderWeek();
+};
+
 window.changeWeek = direction => {
   weekOffset += direction;
   renderWeek();
 };
+
+//today jump function 
+window.goToday = () => {
+  weekOffset = 0;
+  renderWeek();
+};
+
 
 window.openPopup = (date, task = null, id = null) => {
   selectedDay = date;
@@ -126,12 +168,18 @@ window.deleteTask = () => {
 };
 
 function loadTasks(date) {
+  
+  const filterEl = document.getElementById('statusFilter');
+  const statusFilter = filterEl ? filterEl.value : '';
+
   get(ref(db, `users/${uid()}/tasks/${date}`)).then(snapshot => {
     const container = document.getElementById(`tasks-${date}`);
+    if (!container) return console.error('Missing task list container:', `tasks-${date}`);
+
     container.innerHTML = '';
     if (snapshot.exists()) {
-      const tasks = snapshot.val();
-      Object.entries(tasks).forEach(([id, data]) => {
+      Object.entries(snapshot.val()).forEach(([id, data]) => {
+        if (statusFilter && data.status !== statusFilter) return;
         const div = document.createElement('div');
         div.className = 'task-item';
         div.style.borderLeftColor = data.color;

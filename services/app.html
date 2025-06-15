@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Weekly Task Manager</title>
   <link rel="stylesheet" href="/style/taskstyle.css" />
+  <script type="module" src="/script/app.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
@@ -19,19 +20,36 @@
 </header>
 
 
-  <section class="calendar-controls">
-    <button onclick="changeWeek(-1)">&#8592; Prev</button>
-    <span id="weekLabel">This Week</span>
-    <button onclick="changeWeek(1)">Next &#8594;</button>
-  </section>
+ <!-- calendar week number update -->
+ <div class="calendar-controls">
+  <button onclick="goToday()">Today</button>
+  <button onclick="changeWeek(-1)">← Prev</button>
+  <span id="weekLabel"></span>
+  <button onclick="changeWeek(1)">Next →</button>
+  <input type="date" id="jumpDateInput">
+  <button onclick="jumpToDate()">Go</button>
+</div>
+
+<!-- filter -->
+ <div class="filter-bar">
+  <label for="statusFilter">Filter by Status:</label>
+  <select id="statusFilter">
+  <option value="">All</option>
+  <option value="Planned">Planned</option>
+  <option value="In Progress">In Progress</option>
+  <option value="Done">Done</option>
+</select>
+</div>
 
   <div class="week-grid" id="weekGrid"></div>
+  <span id="weekLabel"></span>
 
   <!-- Task Popup -->
   <div id="taskPopup" class="popup hidden">
   <h3 id="popupTitle">Add/Edit Task</h3>
   <textarea id="taskTitle" placeholder="Task Details"></textarea>
-  <label>Color: <input type="color" id="taskColor" class="popup-input"></label>
+  <input type="color" id="taskColor" class="popup-input" />
+
   <label>Status:
     <select id="taskStatus" class="popup-input">
       <option>Planned</option>
@@ -63,7 +81,7 @@
 </div>
 
 
-  <script type="module" src="/firebase-config.js"></script>
+  <script type="module" src="/config/firebase-config.js"></script>
   <script type="module" src="/script/app.js"></script>
   <script>
     function toggleTheme() {

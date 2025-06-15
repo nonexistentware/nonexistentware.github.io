@@ -25,10 +25,9 @@
   <!-- google login btn -->
    <div id="social-login">
   <p>Social Login</p>
-  <button id="googleLoginBtn" class="google-btn">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
-    Sign in with Google
-  </button>
+  <button id="googleLoginBtn" class="google-icon-btn" title="Sign in with Google">
+  <img id="googleIcon" src="/img/googleicon.png" alt="Google Icon" />
+</button>
 </div>
 
   <script src="config/firebase-config.js"></script>
@@ -38,11 +37,18 @@
       const isDark = document.body.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
       document.getElementById("themeToggle").textContent = isDark ? "☀️ Theme" : "🌗 Theme";
+      updateGoogleIconTheme(isDark ? 'dark' : 'light');
     }
 
     const currentTheme = localStorage.getItem("theme") || "light";
     if (currentTheme === "dark") document.body.classList.add("dark");
     document.getElementById("themeToggle").textContent = currentTheme === "dark" ? "☀️ Theme" : "🌗 Theme";
+
+    function updateGoogleIconTheme(currentTheme) {
+  const icon = document.getElementById('googleIcon');
+  if (!icon) return;
+  icon.style.filter = theme === 'dark' ? 'invert(1)' : 'invert(0)';
+}
   </script>
 </body>
 </html>
