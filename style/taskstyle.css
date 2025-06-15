@@ -407,4 +407,21 @@ input[type="color"]::-webkit-color-swatch {
   border: none;
 }
 
+/* settings popup */
+.popup.hidden {
+  display: none;
+}
 
+.popup .close-btn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+#settingsPopup {
+  max-width: 400px;
+}

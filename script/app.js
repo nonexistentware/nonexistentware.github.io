@@ -1,7 +1,12 @@
 import { auth, db } from '../config/firebase-config.js';
 import {
   onAuthStateChanged,
-  signOut
+  signOut,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updateEmail,
+  sendEmailVerification,
+  deleteUser
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import {
   ref,
@@ -10,6 +15,16 @@ import {
   get,
   remove
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+// ✅ Add this immediately after the imports
+// Priority: Firebase > localStorage > default
+let userSettings = {
+  weekStart: localStorage.getItem('weekStart') || 'Monday',
+  emailReminders: localStorage.getItem('emailReminders') === 'true',
+  defaultStatus: localStorage.getItem('defaultStatus') || 'Planned',
+  defaultPriority: localStorage.getItem('defaultPriority') || 'Medium'
+};
+
 
 const uid = () => auth.currentUser?.uid;
 const weekGrid = document.getElementById('weekGrid');
@@ -27,27 +42,104 @@ const downloadBtn = document.getElementById('downloadBtn');
 const deleteBtn = document.getElementById('deleteBtn');
 const popupCloseX = document.getElementById('popupCloseX');
 
+//settins popup 
+const settingsPopup = document.getElementById('settingsPopup');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsCloseX = document.getElementById('settingsCloseX');
+settingsBtn.addEventListener('click', () => settingsPopup.classList.remove('hidden'));
+settingsCloseX.addEventListener('click', () => settingsPopup.classList.add('hidden'));
+
 let selectedDay = null;
 let editingTaskId = null;
 let currentTaskData = null;
 let weekOffset = 0;
 
-onAuthStateChanged(auth, user => {
-  if (!user) window.location.href = 'login.html';
-  else renderWeek();
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Settings dropdowns must exist in the DOM
+  const weekStartEl = document.getElementById('weekStart');
+  const defaultStatusEl = document.getElementById('defaultStatus');
+
+  // Load persisted settings
+  if (weekStartEl) {
+    weekStartEl.value = userSettings.weekStart;
+    weekStartEl.onchange = () => {
+      userSettings.weekStart = weekStartEl.value;
+      localStorage.setItem('weekStart', weekStartEl.value);
+      renderWeek();
+    };
+  }
+
+  if (defaultStatusEl) {
+    defaultStatusEl.value = userSettings.defaultStatus;
+    defaultStatusEl.onchange = () => {
+      userSettings.defaultStatus = defaultStatusEl.value;
+      localStorage.setItem('defaultStatus', defaultStatusEl.value);
+    };
+  }
+
+  // Finally render week
+  renderWeek();
 });
+
+
+//change status 
+window.changeDefaultStatus = function () {
+  const selected = document.getElementById('defaultStatus').value;
+  userSettings.defaultStatus = selected;
+  localStorage.setItem('defaultStatus', selected);
+};
+
+async function loadUserSettings() {
+  const snapshot = await get(ref(db, `users/${uid()}/settings`));
+  if (snapshot.exists()) {
+  Object.assign(userSettings, snapshot.val());
+  } 
+}
+
+// function getCurrentWeekDates(offset = 0) {
+//   const start = new Date();
+//   const day = start.getDay();
+//   const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+//   const monday = new Date(start.setDate(diff + offset * 7));
+//   return Array.from({ length: 7 }, (_, i) => {
+//     const d = new Date(monday);
+//     d.setDate(monday.getDate() + i);
+//     return d;
+//   });
+// }
 
 function getCurrentWeekDates(offset = 0) {
   const start = new Date();
-  const day = start.getDay();
-  const diff = start.getDate() - day + (day === 0 ? -6 : 1);
-  const monday = new Date(start.setDate(diff + offset * 7));
+  const day = start.getDay(); // 0 = Sunday, 1 = Monday...
+
+  // Calculate week start based on setting
+  const diff = 
+  start.getDate() -
+  day +
+  (userSettings.weekStart === 'Sunday' ? 0 : (day === 0 ? -6 : 1));
+
+  const weekStart = new Date(start.setDate(diff + offset * 7));
+
   return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
     return d;
   });
 }
+
+window.changeWeekStart = function () {
+  const selected = document.getElementById('weekStart').value;
+  const normalized = selected.charAt(0).toUpperCase() + selected.slice(1).toLowerCase(); // Normalize casing
+  userSettings.weekStart = normalized;
+  localStorage.setItem('weekStart', normalized);
+  renderWeek();
+};
+
 
 //updated render
 function renderWeek() {
@@ -80,12 +172,26 @@ if (!weekGrid || !weekLabel) {
 
 window.addEventListener('DOMContentLoaded', () => {
   const filterSelect = document.getElementById('statusFilter');
+  const weekStartEl = document.getElementById('weekStart');
+  const defaultStatusEl = document.getElementById('defaultStatus');
+  if (defaultStatusEl && userSettings.defaultStatus) {
+    defaultStatusEl.value = userSettings.defaultStatus;
+  }
+  
+  // ✅ Use stored value directly, do NOT lowercase
+  if (weekStartEl && userSettings.weekStart) {
+    weekStartEl.value = userSettings.weekStart;
+  }
+
   if (filterSelect) {
     filterSelect.addEventListener('change', () => {
-      renderWeek(); // re-renders the week when status filter changes
+      renderWeek();
     });
   }
+
+  renderWeek(); // ✅ Ensure calendar is rendered based on current settings
 });
+
 
 //added fnction for redner 
 function getISOWeekNumber(date) {
@@ -123,13 +229,26 @@ window.openPopup = (date, task = null, id = null) => {
   editingTaskId = id;
   currentTaskData = task;
   taskPopup.classList.remove('hidden');
+
   taskTitle.value = task?.title || '';
-  const color = task?.color || '#cccccc';
-  taskColor.value = color;
-  taskColor.style.backgroundColor = color;
-  taskStatus.value = task?.status || 'Planned';
+  taskColor.value = task?.color || '#cccccc';
+  taskStatus.value = task?.status || userSettings.defaultStatus;
   taskPriority.value = task?.priority || 'Low';
 };
+
+// window.openPopup = (date, task = null, id = null) => {
+//   selectedDay = date;
+//   editingTaskId = id;
+//   currentTaskData = task;
+//   taskPopup.classList.remove('hidden');
+//   taskTitle.value = task?.title || '';
+//   const color = task?.color || '#cccccc';
+//   taskColor.value = color;
+//   taskColor.style.backgroundColor = color;
+//   taskStatus.value = task?.status || 'Planned';
+//   taskPriority.value = task?.priority || 'Low';
+//   taskStatus.value = task?.status || userSettings.defaultStatus;
+// };
 
 window.closePopup = () => {
   taskPopup.classList.add('hidden');
@@ -137,6 +256,162 @@ window.closePopup = () => {
 
 popupCloseX.addEventListener('click', () => closePopup());
 
+//change email 
+// import { sendEmailVerification, updateEmail } from "firebase/auth";
+
+window.changeEmail = async function changeEmail() {
+  const newEmail = document.getElementById("newEmailInput")?.value.trim();
+  const user = auth.currentUser;
+
+  // ✅ Check if user is logged in
+  if (!user) {
+    alert("No authenticated user found.");
+    return;
+  }
+
+  if (!newEmail) {
+    alert("Please enter a new email.");
+    return;
+  }
+
+  // ✅ Check if current email is verified
+  if (!user.emailVerified) {
+    const confirm = window.confirm("Your email is not verified. Do you want to send a verification email?");
+    if (confirm) {
+      try {
+        await sendEmailVerification(user);
+        alert("Verification email sent. Please verify before changing your email.");
+      } catch (err) {
+        console.error("Verification error:", err);
+        alert("Failed to send verification email.");
+      }
+    }
+    return;
+  }
+
+  // ✅ Try changing email
+  try {
+    await updateEmail(user, newEmail);
+    alert("Email updated successfully.");
+  } catch (error) {
+    console.error("Failed to change email:", error);
+    alert("Failed to change email: " + error.message);
+  }
+};
+
+
+//account delete
+window.deleteAccount = async function deleteAccount() {
+  const pwd = document.getElementById('confirmPassword').value;
+  if (!pwd.trim()) return alert("Enter your password to confirm.");
+
+  try {
+    const user = auth.currentUser;
+    const credential = EmailAuthProvider.credential(user.email, pwd);
+    await reauthenticateWithCredential(user, credential);
+
+    // Remove user's tasks
+    await remove(ref(db, `users/${uid()}/tasks`));
+
+    // Delete user account
+    await deleteUser(user);
+
+    alert("Account and all tasks deleted.");
+    window.location.href = 'login.html';
+  } catch (error) {
+    console.error(error);
+    const msg = error.code === 'auth/requires-recent-login'
+      ? 'Re-login required—please sign in again before deleting.'
+      : error.message;
+    alert(msg);
+  }
+};
+
+//verify current email 
+async function verifyCurrentUserEmail() {
+  const user = auth.currentUser;
+  const password = prompt("Please re-enter your password:");
+
+  if (!user || !user.email || !password) {
+    alert("Missing credentials.");
+    return;
+  }
+
+  const credential = EmailAuthProvider.credential(user.email, password);
+
+  try {
+    await reauthenticateWithCredential(user, credential);
+    await sendEmailVerification(user);
+    alert("Verification email sent.");
+  } catch (error) {
+    console.error("Verification error:", error);
+    alert("Failed to send verification email: " + error.message);
+  }
+}
+
+//new function export, save preferences, load user preferences
+// SETTINGS FUNCTIONS
+
+// Export all tasks as JSON
+window.exportAllTasks = async () => {
+  const uidValue = auth.currentUser?.uid;
+  if (!uidValue) return alert("User not logged in.");
+  const snapshot = await get(ref(db, `users/${uidValue}/tasks`));
+  if (!snapshot.exists()) return alert("No tasks to export.");
+
+  const tasks = snapshot.val();
+  const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `tasks_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+};
+
+// Save settings (e.g., email reminders, default task status/priority)
+window.saveUserPreferences = async () => {
+  const uidValue = auth.currentUser?.uid;
+  if (!uidValue) return alert("User not logged in.");
+
+  const emailReminders = document.getElementById('emailReminders')?.checked;
+  const defaultStatus = document.getElementById('defaultStatus')?.value;
+  const defaultPriority = document.getElementById('defaultPriority')?.value;
+  const weekStart = document.getElementById('weekStart')?.value;
+
+  const prefs = {
+    emailReminders,
+    defaultStatus,
+    defaultPriority,
+    weekStart
+  };
+
+  await set(ref(db, `users/${uidValue}/preferences`), prefs);
+  alert("Settings saved successfully.");
+};
+
+// Load preferences into the settings popup
+window.loadUserPreferences = async () => {
+  const uidValue = auth.currentUser?.uid;
+  if (!uidValue) return;
+  const snapshot = await get(ref(db, `users/${uidValue}/preferences`));
+  if (!snapshot.exists()) return;
+  const prefs = snapshot.val();
+
+  if (document.getElementById('emailReminders')) {
+    document.getElementById('emailReminders').checked = prefs.emailReminders || false;
+  }
+  if (prefs.defaultStatus && document.getElementById('defaultStatus')) {
+    document.getElementById('defaultStatus').value = prefs.defaultStatus;
+  }
+  if (prefs.defaultPriority && document.getElementById('defaultPriority')) {
+    document.getElementById('defaultPriority').value = prefs.defaultPriority;
+  }
+  if (prefs.weekStart && document.getElementById('weekStart')) {
+    document.getElementById('weekStart').value = prefs.weekStart;
+  }
+};
+
+// Call loadUserPreferences on popup open if needed
+// loadUserPreferences(); // you can call this inside the function that shows the settings popup
 window.saveTask = () => {
   if (!taskTitle.value.trim()) {
     alert("Task title cannot be empty.");

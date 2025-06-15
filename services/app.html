@@ -15,6 +15,7 @@
   <h1>Weekly Planner</h1>
   <div>
     <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
+    <button id="settingsBtn" class="logout-btn">Settings</button>
     <button onclick="logout()" class="logout-btn">Logout</button>
   </div>
 </header>
@@ -78,6 +79,36 @@
 </div>
 
   </div>
+</div>
+
+<!-- settings popup -->
+ <div id="settingsPopup" class="popup hidden">
+  <button id="settingsCloseX" class="close-btn">×</button>
+  <h3>Account Settings</h3>
+
+  <!-- <label>
+    <input type="checkbox" id="emailReminders"> Enable Email Reminders
+  </label> -->
+
+  <label>
+    Default Task Status:
+    <select id="defaultStatus">
+      <option value="Planned">Planned</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Done">Done</option>
+    </select>
+  </label>
+
+  <label>
+    Start Week On:
+    <select id="weekStart" onchange="changeWeekStart()">
+      <option value="Monday">Monday</option>
+      <option value="Sunday">Sunday</option>
+    </select>
+  </label>
+
+  <button onclick="exportAllTasks()">Export All Tasks (JSON)</button>
+  <button onclick="deleteAccount()">Delete Account</button>
 </div>
 
 
