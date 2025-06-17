@@ -425,3 +425,13 @@ input[type="color"]::-webkit-color-swatch {
 #settingsPopup {
   max-width: 400px;
 }
+
+/* Light mode: black "X" */
+body:not(.dark) #settingsPopup .close-btn {
+  color: black;
+}
+
+/* Dark mode: white "X" */
+body.dark #settingsPopup .close-btn {
+  color: white;
+}
