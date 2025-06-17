@@ -10,7 +10,7 @@ import {
   GoogleAuthProvider,
   reauthenticateWithPopup,
   initializeAuth,
-  browserPopupRedirectResolver
+  browserPopupRedirectResolver,
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import {
   ref,
@@ -29,6 +29,8 @@ const firebaseConfig = {
     appId: "1:639121324059:web:cbfaf64e008fd94b60a0be",
     measurementId: "G-CFPSHZSRZ5"
 };
+
+
 
 // ✅ Add this immediately after the imports
 // Priority: Firebase > localStorage > default
@@ -189,6 +191,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const filterSelect = document.getElementById('statusFilter');
   const weekStartEl = document.getElementById('weekStart');
   const defaultStatusEl = document.getElementById('defaultStatus');
+  const importInput = document.getElementById('importInput');
+  const uploadBtn = document.getElementById('uploadTasksBtn');
+
   if (defaultStatusEl && userSettings.defaultStatus) {
     defaultStatusEl.value = userSettings.defaultStatus;
   }
@@ -203,6 +208,31 @@ window.addEventListener('DOMContentLoaded', () => {
       renderWeek();
     });
   }
+
+  if (uploadBtn && importInput) {
+    uploadBtn.addEventListener('click', async () => {
+      const file = importInput.files?.[0];
+      if (!file) {
+        return alert('Please first select a JSON file using the input above.');
+      }
+
+      try {
+        await importTasks(file);
+        // Clear input so same file can be chosen again
+        importInput.value = '';
+      } catch (e) {
+        console.error(e);
+        alert('Upload failed: ' + e.message);
+      }
+    });
+  }
+
+//   document.getElementById('importInput')?.addEventListener('change', async evt => {
+//   const file = evt.target.files[0];
+//   if (!file) return;
+//   await importTasks(file);
+//   evt.target.value = ''; 
+// });
 
   renderWeek(); // ✅ Ensure calendar is rendered based on current settings
 });
@@ -572,6 +602,86 @@ window.exportToJson = () => {
   a.download = `${currentTaskData.title.replace(/\s+/g, '_')}.json`;
   a.click();
 };
+
+//import tasks from JSON
+window.importTasks = async function(file) {
+  try {
+    const content = await file.text();
+    const tasksByDate = JSON.parse(content);
+    const uidValue = auth.currentUser?.uid;
+    if (!uidValue) throw new Error('Not logged in.');
+
+    const existingSnapshot = await get(ref(db, `users/${uidValue}/tasks`));
+    const existingData = existingSnapshot.exists() ? existingSnapshot.val() : {};
+    let count = 0, skipped = 0;
+
+    for (const [date, tasks] of Object.entries(tasksByDate)) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+      const existingForDay = existingData[date] || {};
+
+      for (const task of Object.values(tasks)) {
+        const exists = Object.values(existingForDay).some(t =>
+          t.title === task.title &&
+          t.createdAt === task.createdAt
+        );
+        if (exists) {
+          skipped++;
+          continue;
+        }
+        const id = push(ref(db, `users/${uidValue}/tasks/${date}`)).key;
+        await set(ref(db, `users/${uidValue}/tasks/${date}/${id}`), task);
+        count++;
+      }
+    }
+
+    alert(`Imported ${count} new tasks. Skipped ${skipped} duplicates.`);
+    renderWeek();
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
+
+
+async function importTasks(file) {
+  try {
+    const fileContent = await file.text();
+    const tasksByDate = JSON.parse(fileContent);
+    const uidValue = auth.currentUser?.uid;
+    if (!uidValue) throw new Error('Not logged in.');
+
+    const existingSnapshot = await get(ref(db, `users/${uidValue}/tasks`));
+    const existingData = existingSnapshot.exists() ? existingSnapshot.val() : {};
+
+    let count = 0, skipped = 0;
+
+    for (const [date, tasks] of Object.entries(tasksByDate)) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+      const existingForDay = existingData[date] || {};
+
+      for (const task of Object.values(tasks)) {
+        const exists = Object.values(existingForDay).some(t =>
+          t.title === task.title &&
+          t.createdAt === task.createdAt
+        );
+        if (exists) {
+          skipped++;
+          continue;  // skip duplicates
+        }
+        const id = push(ref(db, `users/${uidValue}/tasks/${date}`)).key;
+        await set(ref(db, `users/${uidValue}/tasks/${date}/${id}`), task);
+        count++;
+      }
+    }
+
+    alert(`Imported ${count} new tasks, skipped ${skipped} duplicates.`);
+    renderWeek();
+
+  } catch (err) {
+    console.error(err);
+    alert('Import failed: ' + err.message);
+  }
+}
 
 function onDrop(e, toDate) {
   const { id, from } = JSON.parse(e.dataTransfer.getData('text/plain'));

@@ -112,6 +112,11 @@
     <input type="password" id="confirmPassword" placeholder="Re‑enter your password to delete">
   </label>
 
+  <label for="importJsonFile">Import Tasks (JSON):</label>
+<!-- <input type="file" id="importJsonFile" accept="application/json" /> -->
+ <input type="file" id="importInput" accept=".json">
+<button id="uploadTasksBtn">Upload Tasks</button>
+
   <button onclick="exportAllTasks()">Export All Tasks (JSON)</button>
   <button onclick="deleteAccount()">Delete Account</button>
 </div>
