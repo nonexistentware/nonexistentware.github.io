@@ -42,7 +42,7 @@
       box-sizing: border-box;
     }
 
-    select, input[type="number"], input[type="range"], button {
+    select, input[type="number"], button {
       padding: 10px;
       margin: 10px 0;
       width: 300px;
@@ -52,6 +52,12 @@
       border: 1px solid var(--input-border);
       transition: background-color 0.3s, color 0.3s;
     }
+
+    input[type="range"] {
+      width: 300px;
+      margin: 10px 0;
+    }
+
 
     body.dark select,
     body.dark input[type="number"],
