@@ -16,6 +16,7 @@
       margin: 0;
       font-family: Arial, sans-serif;
       transition: background-color 0.3s, color 0.3s;
+      overflow-y: auto;
     }
 
     body.light {
@@ -29,21 +30,18 @@
     }
 
     .centered-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      height: 100%;
       padding: 20px;
+      max-width: 700px;
+      margin: 0 auto;
     }
 
     h1 {
       margin-bottom: 24px;
+      text-align: center;
     }
 
     #updatesContainer {
-      margin-top: 100px;
-      max-width: 600px;
+      margin-top: 20px;
       width: 100%;
     }
 
@@ -84,7 +82,7 @@
     }
 
     #themeToggle {
-      position: absolute;
+      position: fixed;
       top: 16px;
       right: 16px;
       padding: 6px 12px;
@@ -94,6 +92,7 @@
       border-radius: 6px;
       cursor: pointer;
       transition: background 0.3s, color 0.3s;
+      z-index: 10;
     }
 
     body.dark #themeToggle {
@@ -110,7 +109,6 @@
   </div>
 
   <script>
-    // Theme toggle logic
     const themeBtn = document.getElementById("themeToggle");
     const currentTheme = localStorage.getItem("theme") || "light";
     document.body.classList.add(currentTheme);
@@ -125,7 +123,6 @@
     }
   </script>
 
-  <!-- Firebase logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
@@ -157,7 +154,7 @@
           div.innerHTML = `
             <div class="update-title">${update.title}</div>
             <div class="update-description">${update.description}</div>
-            <dei cass="update-version">${update.version}</dei>
+            <div class="update-version">${update.version}</div>
             <div class="update-date">${update.date}</div>
           `;
           updatesContainer.appendChild(div);
