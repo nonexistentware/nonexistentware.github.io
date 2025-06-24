@@ -2,463 +2,147 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Temporary Email</title>
-  <!-- Favicon for browser tab -->
-  <link rel="icon" type="image/png" href="/img/favgear2.png" />
   <style>
-    :root {
-      --bg: #f2f2f2;
-      --text: #000;
-      --box: #fff;
-      --border: #ccc;
-      --link: #007bff;
-      --button-bg: #007bff;
-      --button-hover: #0056b3;
-    }
-
-    body.dark {
-      --bg: #121212;
-      --text: #f5f5f5;
-      --box: #1e1e1e;
-      --border: #333;
-      --link: #66b2ff;
-      --button-bg: #333;
-      --button-hover: #444;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    #themeToggle {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: var(--button-bg);
-      color: white;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    h2, h3 {
-      margin: 10px 0;
-    }
-
-    .email-box {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 10px 0;
-      color: var(--text);
-    }
-
-    .warning {
-      color: #d9534f;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-
-    #time-left {
-      font-weight: bold;
-      color: #d9534f;
-    }
-
-    ul {
-      list-style-type: none;
-      padding: 0;
-      text-align: left;
-      margin: 10px 0;
-      width: 100%;
-      max-width: 700px;
-    }
-
-    li {
-      background: var(--box);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 10px;
-      padding: 10px;
-      transition: background 0.3s, border 0.3s;
-    }
-
-    .email-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .email-subject {
-      font-weight: bold;
-    }
-
-    .email-body {
-      margin-top: 10px;
-      white-space: pre-wrap;
-    }
-
-    .timestamp {
-      font-size: 12px;
-      color: #888;
-      margin-top: 4px;
-    }
-
-    button {
-      margin: 5px;
-      padding: 10px 15px;
-      border: none;
-      background: var(--button-bg);
-      color: white;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background: var(--button-hover);
-    }
-
-    a {
-      color: var(--link);
-      text-decoration: underline;
-    }
-
-    a:hover {
-      text-decoration: none;
-    }
-    /* markup  */
-    .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none;
-  background: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.modal-content {
-  background: #fff;
-  color: #000;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 80%;
-  max-height: 80%;
-  overflow: auto;
-  text-align: left;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-}
-
-/* Dark theme modal */
-body.dark .modal-content {
-  background: #1e1e1e;
-  color: #fff;
-}
-
-.modal-close {
-  float: right;
-  font-size: 24px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
+    :root { --bg: #f2f2f2; --text: #000; --box: #fff; --border: #ccc; --link: #007bff; --button-bg: #007bff; --button-hover: #0056b3; }
+    body.dark { --bg: #121212; --text: #f5f5f5; --box: #1e1e1e; --border: #333; --link: #66b2ff; --button-bg: #333; --button-hover: #444; }
+    body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; transition: background 0.3s, color 0.3s; }
+    #themeToggle { position: absolute; top: 15px; right: 15px; background: var(--button-bg); color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    h2, h3 { margin: 10px 0; }
+    .email-box { font-size: 18px; font-weight: bold; margin: 10px 0; color: var(--text); }
+    .warning { color: #d9534f; font-size: 14px; margin-bottom: 10px; }
+    #time-left { font-weight: bold; color: #d9534f; }
+    ul { list-style-type: none; padding: 0; text-align: left; margin: 10px 0; width: 100%; max-width: 700px; }
+    li { background: var(--box); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 10px; padding: 10px; transition: background 0.3s, border 0.3s; }
+    .email-header { display: flex; justify-content: space-between; align-items: center; }
+    .email-subject { font-weight: bold; }
+    .timestamp { font-size: 12px; color: #888; margin-top: 4px; }
+    button { margin: 5px; padding: 10px 15px; border: none; background: var(--button-bg); color: white; cursor: pointer; border-radius: 4px; transition: background 0.3s; }
+    button:hover { background: var(--button-hover); }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: none; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 999; }
+    .modal-content { background: #fff; color: #000; padding: 20px; border-radius: 10px; max-width: 90%; max-height: 90%; overflow: auto; text-align: left; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+    body.dark .modal-content { background: #1e1e1e; color: #fff; }
+    .modal-close { float: right; font-size: 24px; font-weight: bold; cursor: pointer; margin-left: 10px; }
   </style>
 </head>
 <body>
   <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
   <h2>Temporary Email Address</h2>
-  <!--  -->
-  
-
-<!--  -->
   <div class="email-box">
-  <span id="email-address">Loading...</span>
-  <button id="copy-btn" title="Copy email" onclick="copyEmail()" style="margin-left: 10px;">📋</button>
-  <span id="copy-status" style="font-size: 14px; color: green; display: none;">✅ Copied</span>
-</div>
-
+    <span id="email-address">Loading...</span>
+    <button id="copy-btn" onclick="copyEmail()">📋</button>
+    <span id="copy-status" style="font-size: 14px; color: green; display: none;">✅ Copied</span>
+  </div>
   <div class="warning">⚠️ Don't reload the page, if you don't want to generate new mailbox.</div>
   <div>Expires in: <span id="time-left">10:00</span></div>
   <button onclick="resetTimer()">Give me 10 more minutes</button>
   <h3>Received Emails</h3>
   <button onclick="fetchMessages()">Refresh Inbox</button>
   <ul id="email-list"><li>No emails yet.</li></ul>
-
-<!-- Modal for email content -->
-<!-- Modal -->
-<div id="emailModal" class="modal">
-  <div class="modal-content">
-    <span class="modal-close" onclick="closeModal()">&times;</span>
-    <div id="modal-body-content" style="height: 70vh;"></div>
+  <div id="emailModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div id="modal-body-content"></div>
+    </div>
   </div>
-</div>
 
-  <script>
-    let token = '';
-    let accountId = '';
-    let timer = 600;
-    let intervalId;
-    let pollId;
-    let seenMessageIds = new Set();
-    let messageCache = {};
-    let theme = localStorage.getItem('theme') || 'light';
-
-    let endTime; // Date.now() + 10*60*1000
-
-
-    function applyTheme() {
-      document.body.classList.toggle('dark', theme === 'dark');
-      document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
+<script>
+let token = '', accountId = '', intervalId, pollId, endTime;
+let seenMessageIds = new Set(), messageCache = {}, theme = localStorage.getItem('theme') || 'light';
+function applyTheme() { document.body.classList.toggle('dark', theme === 'dark'); document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme'; }
+function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('theme', theme); applyTheme(); }
+applyTheme();
+async function createTempEmail() {
+  const domainData = await fetch("https://api.mail.tm/domains").then(res => res.json());
+  const email = `${Math.random().toString(36).substring(2, 10)}@${domainData["hydra:member"][0].domain}`;
+  const password = "P@ssw0rd123!";
+  await fetch("https://api.mail.tm/accounts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ address: email, password }) });
+  const tokenData = await fetch("https://api.mail.tm/token", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ address: email, password }) }).then(res => res.json());
+  token = tokenData.token;
+  document.getElementById("email-address").textContent = email;
+  seenMessageIds.clear(); messageCache = {}; document.getElementById("email-list").innerHTML = '<li>No emails yet.</li>';
+}
+async function fetchMessages() {
+  try {
+    const res = await fetch("https://api.mail.tm/messages", { headers: { Authorization: `Bearer ${token}` } });
+    if (res.status === 401) {
+      console.warn("Token expired. Refreshing mailbox...");
+      clearInterval(intervalId);
+      clearInterval(pollId);
+      startApp();
+      return;
     }
-
-    function toggleTheme() {
-      theme = theme === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('theme', theme);
-      applyTheme();
+    const data = await res.json();
+    const newMessages = data["hydra:member"].filter(msg => !seenMessageIds.has(msg.id));
+    for (const msg of newMessages) {
+      seenMessageIds.add(msg.id);
+      const fullRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, { headers: { Authorization: `Bearer ${token}` } });
+      const fullData = await fullRes.json();
+      messageCache[msg.id] = fullData;
     }
-
-    applyTheme();
-
-    async function createTempEmail() {
-      const domainsRes = await fetch("https://api.mail.tm/domains");
-      const domainsData = await domainsRes.json();
-      const domain = domainsData["hydra:member"][0].domain;
-
-      const random = Math.random().toString(36).substring(2, 10);
-      const email = `${random}@${domain}`;
-      const password = "P@ssw0rd123!";
-
-      await fetch("https://api.mail.tm/accounts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: email, password })
-      });
-
-      const tokenRes = await fetch("https://api.mail.tm/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: email, password })
-      });
-
-      const tokenData = await tokenRes.json();
-      token = tokenData.token;
-
-      const meRes = await fetch("https://api.mail.tm/me", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const meData = await meRes.json();
-      accountId = meData.id;
-
-      document.getElementById("email-address").textContent = email;
-      seenMessageIds.clear();
-      messageCache = {};
-      document.getElementById("email-list").innerHTML = '<li>No emails yet.</li>';
-    }
-
-    async function fetchMessages() {
-      const res = await fetch("https://api.mail.tm/messages", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      const newMessages = data["hydra:member"].filter(msg => !seenMessageIds.has(msg.id));
-
-      for (const msg of newMessages) {
-        seenMessageIds.add(msg.id);
-        const fullRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
-  headers: { Authorization: `Bearer ${token}` }
-});
-const fullData = await fullRes.json();
-messageCache[msg.id] = fullData;
-
-      }
-
-      renderEmails();
-    }
-
-  const expandedMessages = new Set(); // remember opened messages
-
+    renderEmails();
+  } catch (err) {
+    console.error("Error fetching messages:", err);
+  }
+}
 function renderEmails() {
-  const list = document.getElementById("email-list");
-
-  // Ensure the list container is visible (even if previously cleared or hidden)
-  list.style.display = "block";
-  list.innerHTML = "";
-
+  const list = document.getElementById("email-list"); list.innerHTML = "";
   const messages = Object.values(messageCache);
-
-  if (messages.length === 0) {
-    list.innerHTML = "<li>No emails yet.</li>";
-    return;
-  }
-
+  if (messages.length === 0) { list.innerHTML = "<li>No emails yet.</li>"; return; }
   messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
   messages.forEach(email => {
-    const li = document.createElement("li");
-
-    const header = document.createElement("div");
-    header.className = "email-header";
-
-    const subject = document.createElement("div");
-    subject.className = "email-subject";
-    subject.textContent = `${email.from?.address || "Unknown"} - ${email.subject}`;
-
-    const toggleBtn = document.createElement("button");
-    toggleBtn.className = "toggle-btn";
-    toggleBtn.textContent = "Show";
-
-    const downloadBtn = document.createElement("button");
-    downloadBtn.className = "toggle-btn";
-    downloadBtn.textContent = "Download";
-
-    const body = document.createElement("div");
-    body.className = "email-body";
-
-    const emailHtml = email.html?.[0];
-    const fallbackText = email.text || "(No content)";
-    const content = emailHtml || `<pre>${fallbackText}</pre>`;
-
-    toggleBtn.onclick = () => openModal(content);
-    downloadBtn.onclick = () => downloadEmailAsPDF(content, email.subject || "email");
-
-    const timestamp = document.createElement("div");
-    timestamp.className = "timestamp";
-    timestamp.textContent = `🕓 ${new Date(email.createdAt).toLocaleString()}`;
-
-    header.appendChild(subject);
-    header.appendChild(toggleBtn);
-    header.appendChild(downloadBtn);
-
-    li.appendChild(header);
-    li.appendChild(timestamp);
-    li.appendChild(body);
-
-    list.appendChild(li);
+    const li = document.createElement("li"), header = document.createElement("div"); header.className = "email-header";
+    const subject = document.createElement("div"); subject.className = "email-subject"; subject.textContent = `${email.from?.address || "Unknown"} - ${email.subject}`;
+    const toggleBtn = document.createElement("button"); toggleBtn.textContent = "Show";
+    const downloadBtn = document.createElement("button"); downloadBtn.textContent = "Download";
+    const emailHtml = email.html?.[0] || `<pre>${email.text || "(No content)"}</pre>`;
+    toggleBtn.onclick = () => openModal(emailHtml);
+    downloadBtn.onclick = () => downloadEmailWithInlineImages(emailHtml, email.subject || "email");
+    header.appendChild(subject); header.appendChild(toggleBtn); header.appendChild(downloadBtn);
+    const timestamp = document.createElement("div"); timestamp.className = "timestamp"; timestamp.textContent = `🕓 ${new Date(email.createdAt).toLocaleString()}`;
+    li.appendChild(header); li.appendChild(timestamp); list.appendChild(li);
   });
 }
+function openModal(htmlContent) { document.getElementById("modal-body-content").innerHTML = htmlContent; document.getElementById("emailModal").style.display = "flex"; document.addEventListener("keydown", handleEscape); }
+function closeModal() { document.getElementById("emailModal").style.display = "none"; document.removeEventListener("keydown", handleEscape); }
+function handleEscape(e) { if (e.key === "Escape") closeModal(); }
+function copyEmail() { const email = document.getElementById("email-address").textContent; navigator.clipboard.writeText(email).then(() => { document.getElementById("copy-status").style.display = "inline"; setTimeout(() => { document.getElementById("copy-status").style.display = "none"; }, 1500); }); }
+function updateTimerDisplay() { const now = Date.now(), diff = Math.max(0, endTime - now); const min = String(Math.floor(diff / 60000)).padStart(2, '0'), sec = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0'); document.getElementById("time-left").textContent = `${min}:${sec}`; if (diff <= 0) { clearInterval(intervalId); clearInterval(pollId); startApp(); } }
+function resetTimer() { endTime = Date.now() + 10 * 60 * 1000; updateTimerDisplay(); }
+async function startApp() { await createTempEmail(); endTime = Date.now() + 10 * 60 * 1000; updateTimerDisplay(); intervalId = setInterval(updateTimerDisplay, 1000); pollId = setInterval(fetchMessages, 5000); }
+startApp();
 
-
-//btn function 
-function downloadEmailAsPDF(htmlContent, subject) {
-  const tempContainer = document.createElement("div");
-  tempContainer.style.padding = "20px";
-  tempContainer.style.fontFamily = "Arial, sans-serif";
-  tempContainer.innerHTML = htmlContent;
-
-  const opt = {
-    margin:       0.5,
-    filename:     `${sanitizeFilename(subject)}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
-    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-
-  html2pdf().set(opt).from(tempContainer).save();
-}
-
-function sanitizeFilename(name) {
-  return name.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0, 50);
-}
-
-//copy email address 
-function copyEmail() {
-  const email = document.getElementById("email-address").textContent;
-  navigator.clipboard.writeText(email).then(() => {
-    const status = document.getElementById("copy-status");
-    status.style.display = "inline";
-    setTimeout(() => {
-      status.style.display = "none";
-    }, 1500);
-  });
-}
-
-// 
-function openModal(htmlContent) {
-  const modal = document.getElementById("emailModal");
-  const modalBody = document.getElementById("modal-body-content");
-
-  // Allow rendering full HTML email safely inside an iframe
-  modalBody.innerHTML = `
-    <iframe style="width:100%; height:100%; border:none;" sandbox="allow-same-origin allow-popups allow-forms allow-scripts" srcdoc='${htmlContent.replace(/'/g, "&apos;")}'>
-    </iframe>
-  `;
-
-  modal.style.display = "flex";
-  document.addEventListener("keydown", handleEscape); // Add key listener
-}
-
-function closeModal() {
-  document.getElementById("emailModal").style.display = "none";
-  document.removeEventListener("keydown", handleEscape);
-}
-
-function handleEscape(e) {
-  if (e.key === "Escape") closeModal();
-}
-
-
-// 
-    function updateTimerDisplay() {
-      const min = String(Math.floor(timer / 60)).padStart(2, '0');
-      const sec = String(timer % 60).padStart(2, '0');
-      document.getElementById("time-left").textContent = `${min}:${sec}`;
+async function downloadEmailWithInlineImages(htmlContent, subject) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlContent, 'text/html');
+  const images = doc.querySelectorAll('img');
+  for (let img of images) {
+    const src = img.src;
+    if (src.startsWith('data:')) continue;
+    try {
+      const response = await fetch(src, {mode: 'cors'});
+      if (!response.ok) throw new Error('Response not ok');
+      const blob = await response.blob();
+      const reader = new FileReader();
+      const base64 = await new Promise(resolve => { reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); });
+      img.src = base64;
+    } catch (e) {
+      console.warn(`Could not inline image due to CORS or error: ${src}`, e);
     }
-
-    //updated 
-    function updateTimerDisplay() {
-  const now = Date.now();
-  const diff = Math.max(0, endTime - now);
-  const min = String(Math.floor(diff / 60000)).padStart(2, '0');
-  const sec = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-  document.getElementById("time-left").textContent = `${min}:${sec}`;
-
-  if (diff <= 0) {
-    clearInterval(intervalId);
-    clearInterval(pollId);
-    startApp();
   }
+  const serialized = '<!DOCTYPE html>' + doc.documentElement.outerHTML;
+  const blob = new Blob([serialized], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = sanitizeFilename(subject) + '.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
-
-function resetTimer() {
-  endTime = Date.now() + 10 * 60 * 1000;
-  updateTimerDisplay();
-}
-
-
-    async function startApp() {
-  await createTempEmail();
-  endTime = Date.now() + 10 * 60 * 1000;
-  updateTimerDisplay();
-  intervalId = setInterval(updateTimerDisplay, 1000);
-  pollId = setInterval(fetchMessages, 5000);
-}
-
-
-//     window.addEventListener("beforeunload", function (e) {
-//   e.preventDefault();
-//   e.returnValue = ''; // required for the prompt to show in modern browsers
-// });
-
-    startApp();
-    
-  </script>
-  <!--  -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+function sanitizeFilename(name) { return name.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0, 50); }
+</script>
 </body>
 </html>
