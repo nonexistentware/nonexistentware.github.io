@@ -4,455 +4,303 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The SNDBX - Online services</title>
-
-  <!-- SEO -->
-  <meta name="description" content="SNDBX provides online API testing, File Generators, 
-  weight file generators and ability to create diffrent files (json, txt, csv, yaml, etc)
-   online private tasks, temporary email address with email box, proxy table list for the purposes for developers and QA.">
-  <meta name="keywords" content="API Tester, API, Online Tools, Free Developer Tools, JSON Formatter, File Generator, 
-  Web Tools, QA Tools, Temporary Email, DNS Lookup, JSON Validator, CSV Generator, YAML Converter, Online Services, 
-  QA, Dev, qa, dev, admin, devops, development, proxy, cloud tasks, file with weight, text converter, email receiver, online dashboard">
-  <meta name="author" content="Igor Sinchuk Игроь Синчук">
-
-  <!-- Open Graph for better sharing -->
-  <meta property="og:title" content="SNDBX - Free Web Tools for Developers & QA" />
-  <meta property="og:description" content="Free online tools for API testing, WHOIS, Proxy Check, DNS, JSON, and more." />
-  <meta property="og:url" content="https://thesndbx.online" />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://www.thesndbx.online/img/favgear2.png" />
-
-  <!-- For search engines -->
-  <link rel="canonical" href="https://thesndbx.online/" />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="/img/favgear2.png">
-
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "SNDBX",
-  "url": "https://thesndbx.online",
-  "logo": "https://www.thesndbx.online/img/favgear2.png",
-  "description": "SNDBX provides online tools for API testing, text typs converter (text -> json -> yaml), File generators, Temporary email, File with weight and different types ,Online dashboard with tasks and more.",
-  "sameAs": [
-    "https://github.com/your-github",
-    "https://twitter.com/your-twitter"
-  ]
-}
-</script>
-
-  <!-- Material Design Lite -->
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-  <!-- google add  -->
-
-  <!-- Google AdSense script -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3130365157346913"
-     crossorigin="anonymous"></script>
-
-
-
   <style>
-    :root {
-      --bg-color: #f5f5f5;
-      --text-color: #000;
-      --card-bg: #fff;
-    }
+    :root { --bg-color: #f5f5f5; --text-color: #000; --card-bg: #fff; }
     body[data-theme="dark"] {
-      --bg-color: #121212;
-      --text-color: #eee;
-      --card-bg: #1e1e1e;
+      --bg-color: #121212; 
+      --text-color: #eee; 
+      --card-bg: #1e1e1e; 
     }
-    /* body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      font-family: "Roboto", sans-serif;
-      transition: background 0.3s, color 0.3s;
-    } */
-
-    /* added css fragments */
-
-    html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
-}
-
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: "Roboto", sans-serif;
-  transition: background 0.3s, color 0.3s;
-  width: 100%;
-}
-
-/* Hide scrollbar for Chrome, Safari, and Opera */
-body::-webkit-scrollbar {
-  display: none;
-}
-
-
-    #topButtons {
-      position: fixed;
-      top: 16px;
-      right: 24px;
-      display: flex;
-      gap: 12px;
-      z-index: 1001;
-    }
-    #topButtons button {
-      background-color: transparent;
-      border: 1px solid var(--text-color);
-      color: var(--text-color);
-      font-size: 16px;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    #topButtons button:hover {
-      background-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .main-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 60vh;
-      gap: 40px;
-      padding-top: 60px;
-      padding-bottom: 10px;
-    }
-
-    .services-row {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .service-card {
-      width: 250px;
-      height: 250px;
-      background-color: var(--card-bg);
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
-      text-align: center;
-      transition: transform 0.2s, background 0.3s;
-      color: var(--text-color);
-    }
-    .service-card:hover {
-      transform: translateY(-5px);
-    }
-    .service-title {
-      font-size: 20px;
-      font-weight: 500;
-      margin: 12px 0;
-    }
-    .service-image {
-      width: 60%;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 4px;
-    }
-    .service-description {
-      font-size: 14px;
-      margin-top: auto;
-    }
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.6);
-    }
-    .modal-content {
-      background-color: var(--card-bg);
-      margin: 15% auto;
-      padding: 20px;
-      width: 300px;
-      border-radius: 8px;
-      color: var(--text-color);
-      text-align: center;
-    }
-    .modal-content input[type="email"] {
-      width: 90%;
-      padding: 10px;
-      margin-top: 10px;
-      border: 1px solid #aaa;
-      border-radius: 4px;
-    }
-    .modal-content button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      border: none;
-      background-color: #3f51b5;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .close {
-      color: var(--text-color);
-      float: right;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .close:hover {
-      color: red;
-    }
-
-    .toast {
-      visibility: hidden;
-      min-width: 250px;
-      background-color: #4caf50;
-      color: white;
-      text-align: center;
-      border-radius: 8px;
-      padding: 12px;
-      position: fixed;
-      z-index: 999;
-      left: 50%;
-      bottom: 30px;
-      transform: translateX(-50%);
-      font-size: 16px;
-      opacity: 0;
-      transition: opacity 0.5s, visibility 0.5s;
-    }
-    .toast.show {
-      visibility: visible;
-      opacity: 1;
-    }
+    html, body {height:100%; margin:0; font-family:Roboto,sans-serif; background:var(--bg-color); color:var(--text-color); transition:0.3s;}
+    #topButtons {position:fixed; top:16px; right:24px; display:flex; gap:12px; z-index:1001;}
+    #topButtons button {border:1px solid var(--text-color); background:transparent; color:var(--text-color); padding:8px 14px; border-radius:6px; cursor:pointer;}
+    .main-content {display:flex; flex-direction:column; align-items:center; min-height:60vh; padding-top:60px; gap:40px; background:var(--bg-color);}
+    .services-row {display:flex; flex-wrap:wrap; justify-content:center; gap:24px;}
+    .service-card {position:relative; width:250px; height:250px; background:var(--card-bg); border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.15); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--text-color); transition:transform 0.2s; cursor:pointer;}
+    .service-card:hover {transform:translateY(-5px);}
+    .service-title {font-size:20px; font-weight:500; margin:12px 0;}
+    .service-image {width:60%; height:150px; object-fit:cover; border-radius:4px;}
+    .service-description {font-size:14px; margin-top:auto;}
+    .add-card {font-size:100px; color:#888; display:flex; justify-content:center; align-items:center; height:100%;}
+    .menu-btn {position:absolute; top:10px; right:10px; font-size:24px; cursor:pointer;}
+    .context-menu {position:absolute; top:40px; right:10px; background:var(--card-bg); border:1px solid #555; border-radius:5px; display:none; z-index:9999;}
+    .context-menu button {display:block; width:100%; padding:8px; border:none; background:none; color:var(--text-color); text-align:left; cursor:pointer;}
+    .context-menu button:hover {background:#eee;}
+    #addModal, #subscribeModal, #settingsModal, #editModal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center;}
+    .modal-content {position:relative; background:var(--card-bg); padding:30px; border-radius:12px; width:400px; color:var(--text-color); box-shadow: 0 0 15px rgba(0,0,0,0.5);}
+    .modal-content input, .modal-content textarea {width:100%; margin:8px 0; padding:10px; background:var(--bg-color); color:var(--text-color); border:1px solid #555; border-radius:5px;}
+    .modal-content button {margin-top:12px; padding:12px 20px; border:none; background:#3f51b5; color:#fff; border-radius:4px; cursor:pointer; font-size:16px;}
+    .modal-close {position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer;}
+    .toast {visibility:hidden;min-width:250px;background:#4caf50;color:white;text-align:center;border-radius:8px;padding:12px;position:fixed;z-index:999;left:50%;bottom:30px;transform:translateX(-50%);font-size:16px;opacity:0;transition:opacity 0.5s,visibility 0.5s;}
+    .toast.show {visibility:visible;opacity:1;}
   </style>
 </head>
 <body>
 
-<!-- Top-right buttons -->
 <div id="topButtons">
   <button id="subscribeBtn">📧 Subscribe</button>
-  <button id="themeToggle" onclick="toggleTheme()">🌗 Theme</button>
+  <button id="settingsBtn">⚙️ Settings</button>
+  <button id="themeToggle">🌗 Theme</button>
 </div>
-
-<!-- Modal for subscription -->
-<div id="subscribeModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h3>Subscribe to updates</h3>
-    <form id="subscribeForm">
-      <input type="email" id="emailInput" placeholder="Your email address" required />
-      <button type="submit">Subscribe</button>
-    </form>
-  </div>
-</div>
-
-<!-- Success toast -->
-<div id="successToast" class="toast">✅ Email subscribed successfully!</div>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
 <div class="main-content">
-  <div class="services-row">
-    <a href="services/login.html">
-      <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Cloud tasks</div>
-        <img class="service-image" src="/img/cloudtask.png" alt="cloudtask_img">
-        <div class="service-description">
-          Create tasks and sve them in the cloud. 
-        </div>
-      </div>
-    <a href="services/filegenerator.html">
-      <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Csv generator</div>
-        <img class="service-image" src="/img/csv.png" alt="csv_img">
-        <div class="service-description">
-          Generate cvs files or other. Could be created with ready-made templates.
-        </div>
-      </div>
-    </a>
-    <a href="services/apitester.html">
-      <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">API online</div>
-        <img class="service-image" src="/img/api.png" alt="api_img">
-        <div class="service-description">
-          Online API tester. Could be used for some simple tasks.
-        </div>
-      </div>
-    </a>
-    <a href="services/converter.html">
-      <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Converter (TXT/JSON/YAML)</div>
-        <img class="service-image" src="/img/converter.png" alt="converter_img">
-        <div class="service-description">
-          Simple converter from JSON → TXT or TXT → YAML.
-        </div>
-      </div>
-    </a>
+  <div id="serviceContainer" class="services-row"></div>
+</div>
+
+<div id="addModal">
+  <div class="modal-content">
+    <div class="modal-close" onclick="closeModal('addModal')">&times;</div>
+    <h3>Add New Shortcut</h3>
+    <input id="newTitle" placeholder="Title">
+    <textarea id="newDesc" placeholder="Description"></textarea>
+    <input id="newUrl" placeholder="URL">
+    <input id="newImgLink" placeholder="Image URL (optional)">
+    <input id="newImgFile" type="file" accept="image/*">
+    <button onclick="saveShortcut()">Save</button>
   </div>
+</div>
 
-  <div class="services-row">
-    <a href="services/weightgenerator.html">
-      <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Create file with weight</div>
-        <img class="service-image" src="/img/weight.png" alt="weight">
-        <div class="service-description">
-          Create empty file with different formats and custom file weight.
-        </div>
-      </div>
-    </a>
-    <a href="services/email.html">
-      <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Temp email receiver</div>
-        <img class="service-image" src="/img/letter.png" alt="letter_img">
-        <div class="service-description">
-          Temporary email for 10 minutes.
-        </div>
-      </div>
-      <a href="services/proxylist.html">
-      <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Proxy list</div>
-        <img class="service-image" src="/img/proxyimg.png" alt="letter_img">
-        <div class="service-description">
-          Find the proxy server from the list - HTTP, SOCKS4/5.
-        </div>
-      </div>
-      <a href="services/newspage.html">
-      <div class="service-card mdl-shadow--2dp">
-        <div class="service-title">Whats's new</div>
-        <img class="service-image" src="/img/appnews.png" alt="news_img">
-        <div class="service-description">
-          Whats new in our services? Check out the latest updates and features.
-        </div>
-      </div>
-    </a>
+<div id="editModal">
+  <div class="modal-content">
+    <div class="modal-close" onclick="closeModal('editModal')">&times;</div>
+    <h3>Edit Shortcut</h3>
+    <input id="editTitle" placeholder="Title">
+    <textarea id="editDesc" placeholder="Description"></textarea>
+    <input id="editUrl" placeholder="URL">
+    <input id="editImgLink" placeholder="Image URL (optional)">
+    <button onclick="updateShortcut()">Update</button>
   </div>
-</div>  
-  <!-- AdSense Display Ad -->
-  <!-- <div style="margin-bottom: 10px; text-align: center;">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-3130365157346913"
-         data-ad-slot="1234567890"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>  -->
+</div>
 
-  
-<!-- Ad1 -->
- <dvi id="ad-slot">
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-3130365157346913"
-     data-ad-slot="9263351116"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-</dvi>
+<div id="subscribeModal">
+  <div class="modal-content">
+    <div class="modal-close" onclick="closeModal('subscribeModal')">&times;</div>
+    <h3>Subscribe to updates</h3>
+    <input id="emailInput" placeholder="Your email address">
+    <button onclick="saveSubscription()">Subscribe</button>
+  </div>
+</div>
 
-  <!-- Your service cards start here -->
+<div id="settingsModal">
+  <div class="modal-content">
+    <div class="modal-close" onclick="closeModal('settingsModal')">&times;</div>
+    <h3>Settings</h3>
+    <button onclick="exportSettings()">Export Settings</button>
+    <input type="file" id="importFile" style="margin-top:10px">
+    <button onclick="importSettings()">Import Settings</button>
+  </div>
+</div>
 
-
-  <!-- Your service cards start here -->
-
+<div id="successToast" class="toast">✅ Subscribed successfully!</div>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBsqllaKQSVQw_8yyLH7psWwfLGiHeBOGo",
-    authDomain: "web-service-app-5c2f6.firebaseapp.com",
-    databaseURL: "https://web-service-app-5c2f6-default-rtdb.firebaseio.com",
-    projectId: "web-service-app-5c2f6",
-    storageBucket: "web-service-app-5c2f6.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-
-  const body = document.body;
+  let editIndex = -1;
   const themeBtn = document.getElementById('themeToggle');
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  function applyTheme(theme) {
-    body.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    themeBtn.textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
-  }
-  function toggleTheme() {
-    const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    applyTheme(newTheme);
-  }
-  applyTheme(savedTheme);
+  function applyTheme(theme){ document.body.dataset.theme=theme; localStorage.setItem('theme', theme); themeBtn.textContent = theme==='dark'?'☀️ Theme':'🌗 Theme'; }
+  themeBtn.onclick = () => applyTheme(document.body.dataset.theme==='dark'?'light':'dark');
+  applyTheme(localStorage.getItem('theme') || 'light');
 
-  // Modal logic
-  const subscribeBtn = document.getElementById('subscribeBtn');
-  const modal = document.getElementById('subscribeModal');
-  const spanClose = modal.querySelector('.close');
-  const form = document.getElementById('subscribeForm');
-  const toast = document.getElementById('successToast');
+  const services = [
+    { title:"Cloud tasks", img:"/img/cloudtask.png", desc:"Create tasks and save them in the cloud.", url:"services/login.html" },
+    { title:"Csv generator", img:"/img/csv.png", desc:"Generate CSV files using templates.", url:"services/filegenerator.html" },
+    { title:"API online", img:"/img/api.png", desc:"Online API tester.", url:"services/apitester.html" },
+    { title:"Converter (TXT/JSON/YAML)", img:"/img/converter.png", desc:"Convert formats easily.", url:"services/converter.html" },
+    { title:"Create file with weight", img:"/img/weight.png", desc:"Create files with custom size.", url:"services/weightgenerator.html" },
+    { title:"Temp email receiver", img:"/img/letter.png", desc:"Temporary email.", url:"services/email.html" },
+    { title:"Proxy list", img:"/img/proxyimg.png", desc:"Proxy servers list.", url:"services/proxylist.html" },
+    { title:"What's new", img:"/img/appnews.png", desc:"Latest updates.", url:"services/newspage.html" }
+  ];
 
-  subscribeBtn.onclick = () => {
-    modal.style.display = "block";
-    form.reset();
-  };
-  spanClose.onclick = () => {
-    modal.style.display = "none";
-  };
-  window.onclick = (event) => {
-    if (event.target === modal) {
-      modal.style.display = "none";
-    }
-  };
+  const customKey = 'customShortcuts';
+  function getCustom() { return JSON.parse(localStorage.getItem(customKey)||'[]'); }
 
-  form.onsubmit = function (e) {
-    e.preventDefault();
-    const email = document.getElementById('emailInput').value;
-    if (!email) return;
-    firebase.database().ref('subscribers').push({
-      email: email,
-      timestamp: new Date().toISOString()
-    })
-    .then(() => {
-      showToast();
-      modal.style.display = "none";
-    })
-    .catch((error) => {
-      alert("❌ Failed to subscribe: " + error.message);
+  function render() {
+    const container = document.getElementById('serviceContainer');
+    container.innerHTML = '';
+    services.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'service-card';
+      card.onclick = () => window.location.href=item.url;
+      card.innerHTML = `<div class="service-title">${item.title}</div>
+                        <img class="service-image" src="${item.img}">
+                        <div class="service-description">${item.desc}</div>`;
+      container.appendChild(card);
     });
-  };
 
-  function showToast() {
-    toast.classList.add("show");
-    setTimeout(() => {
-      toast.classList.remove("show");
-    }, 3000);
+    getCustom().forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'service-card';
+      card.innerHTML = `<div class="menu-btn">⋮</div>
+                        <div class="context-menu">
+                          <button onclick="startEdit(${index})">Edit</button>
+                          <button onclick="deleteShortcut(${index})">Delete</button>
+                        </div>
+                        <div class="service-title">${item.title}</div>
+                        <img class="service-image" src="${item.img}">
+                        <div class="service-description">${item.desc}</div>`;
+      card.onclick = () => window.open(item.url, '_blank');
+      container.appendChild(card);
+    });
+
+    const addCard = document.createElement('div');
+    addCard.className = 'service-card';
+    addCard.innerHTML = `<div class="add-card">+</div>`;
+    addCard.onclick = () => document.getElementById('addModal').style.display='flex';
+    container.appendChild(addCard);
+
+    document.querySelectorAll('.menu-btn').forEach(btn => {
+      btn.onclick = e => {
+        e.stopPropagation();
+        document.querySelectorAll('.context-menu').forEach(menu => menu.style.display='none');
+        btn.nextElementSibling.style.display = 'block';
+      }
+    });
+
+    window.onclick = () => document.querySelectorAll('.context-menu').forEach(menu => menu.style.display='none');
   }
-</script>
 
+  function startEdit(index) {
+    const custom = getCustom();
+    const item = custom[index];
+    editIndex = index;
+    document.getElementById('editTitle').value = item.title;
+    document.getElementById('editDesc').value = item.desc;
+    document.getElementById('editUrl').value = item.url;
+    document.getElementById('editImgLink').value = item.img;
+    document.getElementById('editModal').style.display='flex';
+  }
+
+  function updateShortcut() {
+    const custom = getCustom();
+    custom[editIndex] = {
+      title: document.getElementById('editTitle').value,
+      desc: document.getElementById('editDesc').value,
+      url: document.getElementById('editUrl').value,
+      img: document.getElementById('editImgLink').value
+    };
+    localStorage.setItem(customKey, JSON.stringify(custom));
+    closeModal('editModal');
+    render();
+  }
+
+  function deleteShortcut(index) {
+    if(confirm("Are you sure?")){
+      const custom = getCustom();
+      custom.splice(index, 1);
+      localStorage.setItem(customKey, JSON.stringify(custom));
+      render();
+    }
+  }
+
+  function saveShortcut() {
+    const title = document.getElementById('newTitle').value.trim();
+    const desc = document.getElementById('newDesc').value.trim();
+    const url = document.getElementById('newUrl').value.trim();
+    const imgLink = document.getElementById('newImgLink').value.trim();
+    const imgFile = document.getElementById('newImgFile').files[0];
+
+    if (!title || !url) return alert('Title and URL are required');
+
+    if (imgFile) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        resizeImage(e.target.result, 256, 256, function(resizedDataUrl) {
+          saveShortcutToStorage(title, desc, url, resizedDataUrl);
+        });
+      }
+      reader.readAsDataURL(imgFile);
+    } else {
+      saveShortcutToStorage(title, desc, url, imgLink || '/img/default.png');
+    }
+  }
+
+  function resizeImage(dataUrl, maxW, maxH, callback) {
+    const img = new Image();
+    img.onload = function() {
+      let ratio = Math.min(maxW / img.width, maxH / img.height, 1);
+      let canvas = document.createElement('canvas');
+      canvas.width = img.width * ratio;
+      canvas.height = img.height * ratio;
+      let ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      callback(canvas.toDataURL('image/png', 0.8));
+    }
+    img.src = dataUrl;
+  }
+
+  function saveShortcutToStorage(title, desc, url, img) {
+    const custom = getCustom();
+    custom.push({title, desc, url, img});
+    localStorage.setItem(customKey, JSON.stringify(custom));
+    closeModal('addModal');
+    render();
+  }
+
+  function saveSubscription() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email) return;
+    localStorage.setItem('subscriptionEmail', email);
+    closeModal('subscribeModal');
+    document.getElementById('successToast').classList.add('show');
+    setTimeout(()=>{document.getElementById('successToast').classList.remove('show')}, 3000);
+  }
+
+  function exportSettings() {
+    const data = JSON.stringify(getCustom());
+    const blob = new Blob([data], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'shortcuts-backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importSettings() {
+    const file = document.getElementById('importFile').files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (Array.isArray(data)) {
+          localStorage.setItem(customKey, JSON.stringify(data));
+          closeModal('settingsModal');
+          render();
+        } else {
+          alert("Invalid file format");
+        }
+      } catch { alert("Error reading file"); }
+    }
+    reader.readAsText(file);
+  }
+
+  document.getElementById('subscribeBtn').onclick = () => document.getElementById('subscribeModal').style.display='flex';
+  document.getElementById('settingsBtn').onclick = () => document.getElementById('settingsModal').style.display='flex';
+
+  function closeModal(id) { document.getElementById(id).style.display='none'; clearFields(id); }
+  function clearFields(id) {
+    if (id==='addModal') {
+      document.getElementById('newTitle').value='';
+      document.getElementById('newDesc').value='';
+      document.getElementById('newUrl').value='';
+      document.getElementById('newImgLink').value='';
+      document.getElementById('newImgFile').value='';
+    } else if (id==='editModal') {
+      document.getElementById('editTitle').value='';
+      document.getElementById('editDesc').value='';
+      document.getElementById('editUrl').value='';
+      document.getElementById('editImgLink').value='';
+    } else if (id==='subscribeModal') {
+      document.getElementById('emailInput').value='';
+    } else if (id==='settingsModal') {
+      document.getElementById('importFile').value='';
+    }
+  }
+
+  render();
+</script>
 </body>
-</html>
+</
