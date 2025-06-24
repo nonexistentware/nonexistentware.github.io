@@ -147,7 +147,7 @@
       const data = snapshot.val();
       updatesContainer.innerHTML = "";
       if (data) {
-        const updates = Object.values(data).sort((a, b) => new Date(a.date) - new Date(b.date));
+        const updates = Object.values(data).sort((a, b) => new Date(b.date) - new Date(a.date));
         updates.forEach(update => {
           const div = document.createElement("div");
           div.className = "update";
