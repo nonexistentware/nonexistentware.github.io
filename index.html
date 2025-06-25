@@ -8,16 +8,12 @@
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   <style>
     :root { --bg-color: #f5f5f5; --text-color: #000; --card-bg: #fff; }
-    body[data-theme="dark"] {
-      --bg-color: #121212; 
-      --text-color: #eee; 
-      --card-bg: #1e1e1e; 
-    }
+    body[data-theme="dark"] { --bg-color: #121212; --text-color: #eee; --card-bg: #1e1e1e; }
     html, body {height:100%; margin:0; font-family:Roboto,sans-serif; background:var(--bg-color); color:var(--text-color); transition:0.3s;}
     #topButtons {position:fixed; top:16px; right:24px; display:flex; gap:12px; z-index:1001;}
     #topButtons button {border:1px solid var(--text-color); background:transparent; color:var(--text-color); padding:8px 14px; border-radius:6px; cursor:pointer;}
     .main-content {display:flex; flex-direction:column; align-items:center; min-height:60vh; padding-top:60px; gap:40px; background:var(--bg-color);}
-    .services-row {display:flex; flex-wrap:wrap; justify-content:center; gap:24px;}
+    .services-row {display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); max-width: 1100px; gap: 24px; justify-content: center;}
     .service-card {position:relative; width:250px; height:250px; background:var(--card-bg); border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.15); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--text-color); transition:transform 0.2s; cursor:pointer;}
     .service-card:hover {transform:translateY(-5px);}
     .service-title {font-size:20px; font-weight:500; margin:12px 0;}
@@ -28,20 +24,21 @@
     .context-menu {position:absolute; top:40px; right:10px; background:var(--card-bg); border:1px solid #555; border-radius:5px; display:none; z-index:9999;}
     .context-menu button {display:block; width:100%; padding:8px; border:none; background:none; color:var(--text-color); text-align:left; cursor:pointer;}
     .context-menu button:hover {background:#eee;}
-    #addModal, #subscribeModal, #settingsModal, #editModal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center;}
+    #addModal, #editModal, #loginModal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center;}
     .modal-content {position:relative; background:var(--card-bg); padding:30px; border-radius:12px; width:400px; color:var(--text-color); box-shadow: 0 0 15px rgba(0,0,0,0.5);}
     .modal-content input, .modal-content textarea {width:100%; margin:8px 0; padding:10px; background:var(--bg-color); color:var(--text-color); border:1px solid #555; border-radius:5px;}
     .modal-content button {margin-top:12px; padding:12px 20px; border:none; background:#3f51b5; color:#fff; border-radius:4px; cursor:pointer; font-size:16px;}
     .modal-close {position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer;}
-    .toast {visibility:hidden;min-width:250px;background:#4caf50;color:white;text-align:center;border-radius:8px;padding:12px;position:fixed;z-index:999;left:50%;bottom:30px;transform:translateX(-50%);font-size:16px;opacity:0;transition:opacity 0.5s,visibility 0.5s;}
-    .toast.show {visibility:visible;opacity:1;}
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
 
 <div id="topButtons">
-  <button id="subscribeBtn">📧 Subscribe</button>
-  <button id="settingsBtn">⚙️ Settings</button>
+  <button id="loginBtn">🔐 Login</button>
+  <button id="logoutBtn" style="display:none">🚪 Logout</button>
   <button id="themeToggle">🌗 Theme</button>
 </div>
 
@@ -52,7 +49,7 @@
 <div id="addModal">
   <div class="modal-content">
     <div class="modal-close" onclick="closeModal('addModal')">&times;</div>
-    <h3>Add New Shortcut</h3>
+    <h3>Add Shortcut</h3>
     <input id="newTitle" placeholder="Title">
     <textarea id="newDesc" placeholder="Description"></textarea>
     <input id="newUrl" placeholder="URL">
@@ -75,295 +72,193 @@
   </div>
 </div>
 
-<div id="subscribeModal">
+<div id="loginModal">
   <div class="modal-content">
-    <div class="modal-close" onclick="closeModal('subscribeModal')">&times;</div>
-    <h3>Subscribe to updates</h3>
-    <input id="emailInput" placeholder="Your email address">
-    <button onclick="saveSubscription()">Subscribe</button>
+    <div class="modal-close" onclick="closeModal('loginModal')">&times;</div>
+    <h3>Login</h3>
+    <input id="emailInput" placeholder="Email">
+    <input id="passwordInput" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
   </div>
 </div>
-
-<div id="settingsModal">
-  <div class="modal-content">
-    <div class="modal-close" onclick="closeModal('settingsModal')">&times;</div>
-    <h3>Settings</h3>
-    <button onclick="exportSettings()">Export Settings</button>
-    <input type="file" id="importFile" style="margin-top:10px">
-    <button onclick="importSettings()">Import Settings</button>
-  </div>
-</div>
-
-<div id="successToast" class="toast">✅ Subscribed successfully!</div>
 
 <script>
-  let editIndex = -1;
-  const themeBtn = document.getElementById('themeToggle');
-  function applyTheme(theme){ document.body.dataset.theme=theme; localStorage.setItem('theme', theme); themeBtn.textContent = theme==='dark'?'☀️ Theme':'🌗 Theme'; }
-  themeBtn.onclick = () => applyTheme(document.body.dataset.theme==='dark'?'light':'dark');
-  applyTheme(localStorage.getItem('theme') || 'light');
+const firebaseConfig = {
+  apiKey: "AIzaSyDqTYRWnOALyjALg2Y5wSoCySoD9POoFjE",
+  authDomain: "web-note-app-f928e.firebaseapp.com",
+  databaseURL: "https://web-note-app-f928e-default-rtdb.firebaseio.com",
+  projectId: "web-note-app-f928e",
+  storageBucket: "web-note-app-f928e.appspot.com",
+  messagingSenderId: "639121324059",
+  appId: "1:639121324059:web:cbfaf64e008fd94b60a0be"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+let currentUser = null;
 
-  function normalizeUrl(url) {
+const services = [
+  { title:"Cloud tasks", img:"/img/cloudtask.png", desc:"Create tasks and save them in the cloud.", url:"services/login.html" },
+  { title:"Csv generator", img:"/img/csv.png", desc:"Generate CSV files.", url:"services/filegenerator.html" },
+  { title:"API online", img:"/img/api.png", desc:"Online API tester.", url:"services/apitester.html" },
+  { title:"Converter", img:"/img/converter.png", desc:"Convert formats.", url:"services/converter.html" },
+  { title:"File with weight", img:"/img/weight.png", desc:"Create files with custom size.", url:"services/weightgenerator.html" },
+  { title:"Temp email", img:"/img/letter.png", desc:"Temporary email.", url:"services/email.html" },
+  { title:"Proxy list", img:"/img/proxyimg.png", desc:"Proxy servers list.", url:"services/proxylist.html" },
+  { title:"What's new", img:"/img/appnews.png", desc:"Latest updates.", url:"services/newspage.html" }
+];
+
+function normalizeUrl(url) {
   if (/^https?:\/\//i.test(url)) return url;
-  if (/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(url)) {
-    return 'https://' + url;
-  }
+  if (/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(url)) return 'https://' + url;
   return window.location.origin + (url.startsWith('/') ? url : '/' + url);
 }
 
-  const services = [
-    { title:"Cloud tasks", img:"/img/cloudtask.png", desc:"Create tasks and save them in the cloud.", url:"services/login.html" },
-    { title:"Csv generator", img:"/img/csv.png", desc:"Generate CSV files using templates.", url:"services/filegenerator.html" },
-    { title:"API online", img:"/img/api.png", desc:"Online API tester.", url:"services/apitester.html" },
-    { title:"Converter (TXT/JSON/YAML)", img:"/img/converter.png", desc:"Convert formats easily.", url:"services/converter.html" },
-    { title:"Create file with weight", img:"/img/weight.png", desc:"Create files with custom size.", url:"services/weightgenerator.html" },
-    { title:"Temp email receiver", img:"/img/letter.png", desc:"Temporary email.", url:"services/email.html" },
-    { title:"Proxy list", img:"/img/proxyimg.png", desc:"Proxy servers list.", url:"services/proxylist.html" },
-    { title:"What's new", img:"/img/appnews.png", desc:"Latest updates.", url:"services/newspage.html" }
-  ];
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  document.getElementById('loginBtn').style.display = user ? 'none' : 'inline-block';
+  document.getElementById('logoutBtn').style.display = user ? 'inline-block' : 'none';
+  renderStatic();
+  if (user) { loadShortcuts(); closeModal('loginModal'); }
+});
 
-  const customKey = 'customShortcuts';
-  function getCustom() { return JSON.parse(localStorage.getItem(customKey)||'[]'); }
+document.getElementById('loginBtn').onclick = () => document.getElementById('loginModal').style.display = 'flex';
+document.getElementById('logoutBtn').onclick = () => auth.signOut();
 
-  function render() {
-    const container = document.getElementById('serviceContainer');
-    container.innerHTML = '';
-    services.forEach(item => {
+function login() {
+  const email = document.getElementById('emailInput').value;
+  const password = document.getElementById('passwordInput').value;
+  auth.signInWithEmailAndPassword(email, password).catch(alert);
+}
+
+function register() {
+  const email = document.getElementById('emailInput').value;
+  const password = document.getElementById('passwordInput').value;
+  auth.createUserWithEmailAndPassword(email, password).catch(alert);
+}
+
+function renderStatic() {
+  const container = document.getElementById('serviceContainer');
+  container.innerHTML = '';
+  services.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'service-card';
+    card.onclick = () => window.location.href = item.url;
+    card.innerHTML = `<div class="service-title">${item.title}</div>
+                      <img class="service-image" src="${item.img}">
+                      <div class="service-description">${item.desc}</div>`;
+    container.appendChild(card);
+  });
+  const addCard = document.createElement('div');
+  addCard.className = 'service-card';
+  addCard.innerHTML = '<div class="add-card">+</div>';
+  addCard.onclick = () => currentUser ? document.getElementById('addModal').style.display='flex' : document.getElementById('loginModal').style.display='flex';
+  container.appendChild(addCard);
+}
+
+function loadShortcuts() {
+  db.ref('users/' + currentUser.uid + '/shortcuts').once('value').then(snapshot => {
+    const data = snapshot.val() || {};
+    Object.entries(data).forEach(([key, item]) => {
       const card = document.createElement('div');
       card.className = 'service-card';
-      card.onclick = () => window.location.href=item.url;
+      card.onclick = e => { if (!e.target.closest('.menu-btn') && !e.target.closest('.context-menu')) window.open(normalizeUrl(item.url), '_blank'); };
       card.innerHTML = `<div class="service-title">${item.title}</div>
                         <img class="service-image" src="${item.img}">
                         <div class="service-description">${item.desc}</div>`;
-      container.appendChild(card);
+      const menuBtn = document.createElement('div');
+      menuBtn.className = 'menu-btn';
+      menuBtn.textContent = '⋮';
+      menuBtn.onclick = ev => {
+        ev.stopPropagation();
+        document.querySelectorAll('.context-menu').forEach(m => m.style.display = 'none');
+        menu.style.display = 'block';
+      };
+      card.appendChild(menuBtn);
+      const menu = document.createElement('div');
+      menu.className = 'context-menu';
+      menu.innerHTML = `<button onclick="startEdit('${key}','${item.title}','${item.desc}','${item.url}','${item.img}')">Edit</button>
+                        <button onclick="deleteShortcut('${key}')">Delete</button>`;
+      card.appendChild(menu);
+      document.getElementById('serviceContainer').appendChild(card);
     });
+  });
+}
 
-    getCustom().forEach((item, index) => {
-  const card = document.createElement('div');
-  card.className = 'service-card';
-
-  // Create content wrapper
-  const content = document.createElement('div');
-  content.className = 'card-content';
-  content.innerHTML = `
-    <div class="service-title">${item.title}</div>
-    <img class="service-image" src="${item.img}">
-    <div class="service-description">${item.desc}</div>`;
-  content.onclick = () => window.open(normalizeUrl(item.url), '_blank');
-  card.appendChild(content);
-
-  // Create menu button
-  const menuBtn = document.createElement('div');
-  menuBtn.className = 'menu-btn';
-  menuBtn.textContent = '⋮';
-  menuBtn.onclick = (e) => {
-    e.stopPropagation();
-    openMenu(e, index);
-  };
-  card.appendChild(menuBtn);
-
-  // Create context menu
-  const menu = document.createElement('div');
-  menu.className = 'context-menu';
-  menu.id = `menu${index}`;
-  menu.innerHTML = `
-    <button onclick="startEdit(${index})">Edit</button>
-    <button onclick="deleteShortcut(${index})">Delete</button>`;
-  card.appendChild(menu);
-
-  container.appendChild(card);
-});
-
-    // getCustom().forEach((item, index) => {
-    //   const card = document.createElement('div');
-    //   card.className = 'service-card';
-    //   card.innerHTML = `<div class="menu-btn">⋮</div>
-    //                     <div class="context-menu">
-    //                       <button onclick="startEdit(${index})">Edit</button>
-    //                       <button onclick="deleteShortcut(${index})">Delete</button>
-    //                     </div>
-    //                     <div class="service-title">${item.title}</div>
-    //                     <img class="service-image" src="${item.img}">
-    //                     <div class="service-description">${item.desc}</div>`;
-    //   card.onclick = () => window.open(item.url, '_blank');
-    //   container.appendChild(card);
-    // });
-
-    const addCard = document.createElement('div');
-    addCard.className = 'service-card';
-    addCard.innerHTML = `<div class="add-card">+</div>`;
-    addCard.onclick = () => document.getElementById('addModal').style.display='flex';
-    container.appendChild(addCard);
-
-    document.querySelectorAll('.menu-btn').forEach(btn => {
-      btn.onclick = e => {
-        e.stopPropagation();
-        document.querySelectorAll('.context-menu').forEach(menu => menu.style.display='none');
-        btn.nextElementSibling.style.display = 'block';
-      }
-    });
-
-    window.onclick = () => document.querySelectorAll('.context-menu').forEach(menu => menu.style.display='none');
-  }
-
-  function startEdit(index) {
-    const custom = getCustom();
-    const item = custom[index];
-    editIndex = index;
-    document.getElementById('editTitle').value = item.title;
-    document.getElementById('editDesc').value = item.desc;
-    document.getElementById('editUrl').value = item.url;
-    document.getElementById('editImgLink').value = item.img;
-    document.getElementById('editModal').style.display='flex';
-  }
-
-  function updateShortcut() {
-  const custom = getCustom();
-  const file = document.getElementById('editImgFile').files[0];
-
-  function saveUpdated(imgResult) {
-    custom[editIndex] = {
-      title: document.getElementById('editTitle').value,
-      desc: document.getElementById('editDesc').value,
-      url: document.getElementById('editUrl').value,
-      img: imgResult
-    };
-    localStorage.setItem(customKey, JSON.stringify(custom));
-    closeModal('editModal');
-    render();
-  }
-
+function saveShortcut() {
+  const title = document.getElementById('newTitle').value.trim();
+  const desc = document.getElementById('newDesc').value.trim();
+  const url = document.getElementById('newUrl').value.trim();
+  const imgLink = document.getElementById('newImgLink').value.trim() || '/img/default.png';
+  const file = document.getElementById('newImgFile').files[0];
+  if (!title || !url) return alert('Title and URL are required');
   if (file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      resizeImage(e.target.result, 256, 256, function(resizedDataUrl) {
-        saveUpdated(resizedDataUrl);
-      });
-    }
+    reader.onload = e => resizeImage(e.target.result, 256, 256, resized => {
+      db.ref('users/' + currentUser.uid + '/shortcuts').push({ title, desc, url, img: resized });
+      closeModal('addModal'); renderStatic(); loadShortcuts();
+    });
     reader.readAsDataURL(file);
   } else {
-    // If no file uploaded, keep existing URL field value
-    saveUpdated(document.getElementById('editImgLink').value);
+    db.ref('users/' + currentUser.uid + '/shortcuts').push({ title, desc, url, img: imgLink });
+    closeModal('addModal'); renderStatic(); loadShortcuts();
   }
 }
 
+function startEdit(key, title, desc, url, img) {
+  window.editKey = key;
+  document.getElementById('editTitle').value = title;
+  document.getElementById('editDesc').value = desc;
+  document.getElementById('editUrl').value = url;
+  document.getElementById('editImgLink').value = img;
+  document.getElementById('editModal').style.display='flex';
+}
 
-  function deleteShortcut(index) {
-    if(confirm("Are you sure?")){
-      const custom = getCustom();
-      custom.splice(index, 1);
-      localStorage.setItem(customKey, JSON.stringify(custom));
-      render();
-    }
-  }
-
-  function saveShortcut() {
-    const title = document.getElementById('newTitle').value.trim();
-    const desc = document.getElementById('newDesc').value.trim();
-    const url = document.getElementById('newUrl').value.trim();
-    const imgLink = document.getElementById('newImgLink').value.trim();
-    const imgFile = document.getElementById('newImgFile').files[0];
-
-    if (!title || !url) return alert('Title and URL are required');
-
-    if (imgFile) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        resizeImage(e.target.result, 256, 256, function(resizedDataUrl) {
-          saveShortcutToStorage(title, desc, url, resizedDataUrl);
-        });
-      }
-      reader.readAsDataURL(imgFile);
-    } else {
-      saveShortcutToStorage(title, desc, url, imgLink || '/img/default.png');
-    }
-  }
-
-  function resizeImage(dataUrl, maxW, maxH, callback) {
-    const img = new Image();
-    img.onload = function() {
-      let ratio = Math.min(maxW / img.width, maxH / img.height, 1);
-      let canvas = document.createElement('canvas');
-      canvas.width = img.width * ratio;
-      canvas.height = img.height * ratio;
-      let ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      callback(canvas.toDataURL('image/png', 0.8));
-    }
-    img.src = dataUrl;
-  }
-
-  function saveShortcutToStorage(title, desc, url, img) {
-    const custom = getCustom();
-    custom.push({title, desc, url, img});
-    localStorage.setItem(customKey, JSON.stringify(custom));
-    closeModal('addModal');
-    render();
-  }
-
-  function saveSubscription() {
-    const email = document.getElementById('emailInput').value.trim();
-    if (!email) return;
-    localStorage.setItem('subscriptionEmail', email);
-    closeModal('subscribeModal');
-    document.getElementById('successToast').classList.add('show');
-    setTimeout(()=>{document.getElementById('successToast').classList.remove('show')}, 3000);
-  }
-
-  function exportSettings() {
-    const data = JSON.stringify(getCustom());
-    const blob = new Blob([data], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'shortcuts-backup.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  function importSettings() {
-    const file = document.getElementById('importFile').files[0];
-    if (!file) return;
+function updateShortcut() {
+  const title = document.getElementById('editTitle').value;
+  const desc = document.getElementById('editDesc').value;
+  const url = document.getElementById('editUrl').value;
+  const imgLink = document.getElementById('editImgLink').value;
+  const file = document.getElementById('editImgFile').files[0];
+  if (file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const data = JSON.parse(e.target.result);
-        if (Array.isArray(data)) {
-          localStorage.setItem(customKey, JSON.stringify(data));
-          closeModal('settingsModal');
-          render();
-        } else {
-          alert("Invalid file format");
-        }
-      } catch { alert("Error reading file"); }
-    }
-    reader.readAsText(file);
+    reader.onload = e => resizeImage(e.target.result, 256, 256, resized => {
+      db.ref('users/' + currentUser.uid + '/shortcuts/' + window.editKey).set({ title, desc, url, img: resized });
+      closeModal('editModal'); renderStatic(); loadShortcuts();
+    });
+    reader.readAsDataURL(file);
+  } else {
+    db.ref('users/' + currentUser.uid + '/shortcuts/' + window.editKey).set({ title, desc, url, img: imgLink });
+    closeModal('editModal'); renderStatic(); loadShortcuts();
   }
+}
 
-  document.getElementById('subscribeBtn').onclick = () => document.getElementById('subscribeModal').style.display='flex';
-  document.getElementById('settingsBtn').onclick = () => document.getElementById('settingsModal').style.display='flex';
-
-  function closeModal(id) { document.getElementById(id).style.display='none'; clearFields(id); }
-  function clearFields(id) {
-    if (id==='addModal') {
-      document.getElementById('newTitle').value='';
-      document.getElementById('newDesc').value='';
-      document.getElementById('newUrl').value='';
-      document.getElementById('newImgLink').value='';
-      document.getElementById('newImgFile').value='';
-    } else if (id==='editModal') {
-      document.getElementById('editTitle').value='';
-      document.getElementById('editDesc').value='';
-      document.getElementById('editUrl').value='';
-      document.getElementById('editImgLink').value='';
-    } else if (id==='subscribeModal') {
-      document.getElementById('emailInput').value='';
-    } else if (id==='settingsModal') {
-      document.getElementById('importFile').value='';
-    }
+function deleteShortcut(key) {
+  if (confirm("Are you sure?")) {
+    db.ref('users/' + currentUser.uid + '/shortcuts/' + key).remove().then(()=>{renderStatic();loadShortcuts()});
   }
+}
 
-  render();
+function resizeImage(dataUrl, maxW, maxH, callback) {
+  const img = new Image();
+  img.onload = () => {
+    let ratio = Math.min(maxW / img.width, maxH / img.height, 1);
+    let canvas = document.createElement('canvas');
+    canvas.width = img.width * ratio;
+    canvas.height = img.height * ratio;
+    let ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    callback(canvas.toDataURL('image/png', 0.8));
+  }
+  img.src = dataUrl;
+}
+
+function closeModal(id) { document.getElementById(id).style.display='none'; }
+
+const themeBtn = document.getElementById('themeToggle');
+function applyTheme(theme){document.body.dataset.theme=theme;localStorage.setItem('theme',theme);themeBtn.textContent=theme==='dark'?'☀️ Theme':'🌗 Theme';}
+themeBtn.onclick=()=>applyTheme(document.body.dataset.theme==='dark'?'light':'dark');
+applyTheme(localStorage.getItem('theme')||'light');
 </script>
 </body>
-
