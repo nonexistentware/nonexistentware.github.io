@@ -435,3 +435,19 @@ body:not(.dark) #settingsPopup .close-btn {
 body.dark #settingsPopup .close-btn {
   color: white;
 }
+
+/* user/name */
+#userName {
+  display: flex; /* Ensures both elements are on the same row */
+  align-items: center;
+}
+
+#userName h1 {
+  margin: 0;  /* Removes default margin from h1 */
+  font-size: 1.5rem;
+}
+
+#userNickname {
+  margin-left: 10px; /* Adds space between "Welcome" and the username */
+  font-size: 1.5rem;
+}

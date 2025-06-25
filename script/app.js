@@ -77,6 +77,19 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
+  // Listen for auth state changes
+onAuthStateChanged(auth, (user) => {
+  const userNickname = document.getElementById('userNickname');
+  
+  if (user) {
+    // If the user is logged in, display their display name or email if Google login was used
+    userNickname.textContent = user.displayName || user.email;
+  } else {
+    // If no user is logged in, show 'Guest'
+    userNickname.textContent = 'Guest';
+  }
+});
+
   // Settings dropdowns must exist in the DOM
   const weekStartEl = document.getElementById('weekStart');
   const defaultStatusEl = document.getElementById('defaultStatus');
