@@ -9,26 +9,58 @@
   <style>
     :root { --bg-color: #f5f5f5; --text-color: #000; --card-bg: #fff; }
     body[data-theme="dark"] { --bg-color: #121212; --text-color: #eee; --card-bg: #1e1e1e; }
-    html, body {height:100%; margin:0; font-family:Roboto,sans-serif; background:var(--bg-color); color:var(--text-color); transition:0.3s;}
+    html, body { height:100%; margin:0; font-family:Roboto,sans-serif; background:var(--bg-color); color:var(--text-color); transition:0.3s; overflow-x: hidden; }
     #topButtons {position:fixed; top:16px; right:24px; display:flex; gap:12px; z-index:1001;}
     #topButtons button {border:1px solid var(--text-color); background:transparent; color:var(--text-color); padding:8px 14px; border-radius:6px; cursor:pointer;}
-    .main-content {display:flex; flex-direction:column; align-items:center; min-height:60vh; padding-top:60px; gap:40px; background:var(--bg-color);}
-    .services-row {display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); max-width: 1100px; gap: 24px; justify-content: center;}
+    .main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 60vh;
+  padding: 60px 0 80px 0;  /* top right bottom left */
+  gap: 40px;
+  background: var(--bg-color);
+}
+
+    .services-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  justify-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+@media (max-width: 1000px) {
+  .services-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .services-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+
     .service-card {position:relative; width:250px; height:250px; background:var(--card-bg); border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.15); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--text-color); transition:transform 0.2s; cursor:pointer;}
     .service-card:hover {transform:translateY(-5px);}
-    .service-title {font-size:20px; font-weight:500; margin:12px 0;}
-    .service-image {width:60%; height:150px; object-fit:cover; border-radius:4px;}
-    .service-description {font-size:14px; margin-top:auto;}
-    .add-card {font-size:100px; color:#888; display:flex; justify-content:center; align-items:center; height:100%;}
+    .service-title {font-size:18px; font-weight:500; margin:10px 0;}
+    .service-image {width:150px; height:150px; object-fit:cover; border-radius:4px;}
+    .service-description {font-size:13px; margin-top:auto; padding: 5px;}
+    .add-card {font-size:80px; color:#888; display:flex; justify-content:center; align-items:center; height:100%;}
     .menu-btn {position:absolute; top:10px; right:10px; font-size:24px; cursor:pointer;}
     .context-menu {position:absolute; top:40px; right:10px; background:var(--card-bg); border:1px solid #555; border-radius:5px; display:none; z-index:9999;}
     .context-menu button {display:block; width:100%; padding:8px; border:none; background:none; color:var(--text-color); text-align:left; cursor:pointer;}
-    .context-menu button:hover {background:#eee;}
-    #addModal, #editModal, #loginModal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center;}
-    .modal-content {position:relative; background:var(--card-bg); padding:30px; border-radius:12px; width:400px; color:var(--text-color); box-shadow: 0 0 15px rgba(0,0,0,0.5);}
-    .modal-content input, .modal-content textarea {width:100%; margin:8px 0; padding:10px; background:var(--bg-color); color:var(--text-color); border:1px solid #555; border-radius:5px;}
-    .modal-content button {margin-top:12px; padding:12px 20px; border:none; background:#3f51b5; color:#fff; border-radius:4px; cursor:pointer; font-size:16px;}
+    .context-menu button:hover {background: rgba(255,255,255,0.1);}
+    .modal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center;}
+    .modal-content {background:var(--card-bg); padding:20px; border-radius:10px; width:90%; max-width:400px; box-shadow: 0 0 10px rgba(0,0,0,0.5); color:var(--text-color); position: relative;}
     .modal-close {position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer;}
+    .modal-content input, .modal-content textarea {width:100%; margin:8px 0; padding:10px; background:var(--bg-color); color:var(--text-color); border:1px solid #555; border-radius:5px;}
+    .modal-content button {margin-top:12px; padding:10px 20px; border:none; background:#3f51b5; color:#fff; border-radius:4px; cursor:pointer;}
+    .modal-content input[type=file] { background: var(--bg-color); color: var(--text-color); }
+    
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -46,53 +78,41 @@
   <div id="serviceContainer" class="services-row"></div>
 </div>
 
-<div id="addModal">
-  <div class="modal-content">
-    <div class="modal-close" onclick="closeModal('addModal')">&times;</div>
-    <h3>Add Shortcut</h3>
-    <input id="newTitle" placeholder="Title">
-    <textarea id="newDesc" placeholder="Description"></textarea>
-    <input id="newUrl" placeholder="URL">
-    <input id="newImgLink" placeholder="Image URL (optional)">
-    <input id="newImgFile" type="file" accept="image/*">
-    <button onclick="saveShortcut()">Save</button>
-  </div>
-</div>
+<!-- Modals -->
+<div id="addModal" class="modal"><div class="modal-content">
+  <div class="modal-close" onclick="closeModal('addModal')">&times;</div>
+  <h3>Add Shortcut</h3>
+  <input id="newTitle" placeholder="Title">
+  <textarea id="newDesc" placeholder="Description"></textarea>
+  <input id="newUrl" placeholder="URL">
+  <input id="newImgLink" placeholder="Image URL (optional)">
+  <input id="newImgFile" type="file" accept="image/*">
+  <button onclick="saveShortcut()">Save</button>
+</div></div>
 
-<div id="editModal">
-  <div class="modal-content">
-    <div class="modal-close" onclick="closeModal('editModal')">&times;</div>
-    <h3>Edit Shortcut</h3>
-    <input id="editTitle" placeholder="Title">
-    <textarea id="editDesc" placeholder="Description"></textarea>
-    <input id="editUrl" placeholder="URL">
-    <input id="editImgLink" placeholder="Image URL (optional)">
-    <input id="editImgFile" type="file" accept="image/*">
-    <button onclick="updateShortcut()">Update</button>
-  </div>
-</div>
+<div id="editModal" class="modal"><div class="modal-content">
+  <div class="modal-close" onclick="closeModal('editModal')">&times;</div>
+  <h3>Edit Shortcut</h3>
+  <input id="editTitle" placeholder="Title">
+  <textarea id="editDesc" placeholder="Description"></textarea>
+  <input id="editUrl" placeholder="URL">
+  <input id="editImgLink" placeholder="Image URL (optional)">
+  <input id="editImgFile" type="file" accept="image/*">
+  <button onclick="updateShortcut()">Update</button>
+</div></div>
 
-<div id="loginModal">
-  <div class="modal-content">
-    <div class="modal-close" onclick="closeModal('loginModal')">&times;</div>
-    <h3>Login</h3>
-    <input id="emailInput" placeholder="Email">
-    <input id="passwordInput" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
-  </div>
-</div>
+<div id="loginModal" class="modal"><div class="modal-content">
+  <div class="modal-close" onclick="closeModal('loginModal')">&times;</div>
+  <h3>Login</h3>
+  <p>Could be used the same credentials as used for the Cloud tasks.</p>
+  <input id="emailInput" placeholder="Email">
+  <input id="passwordInput" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <button onclick="register()">Register</button>
+</div></div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDqTYRWnOALyjALg2Y5wSoCySoD9POoFjE",
-  authDomain: "web-note-app-f928e.firebaseapp.com",
-  databaseURL: "https://web-note-app-f928e-default-rtdb.firebaseio.com",
-  projectId: "web-note-app-f928e",
-  storageBucket: "web-note-app-f928e.appspot.com",
-  messagingSenderId: "639121324059",
-  appId: "1:639121324059:web:cbfaf64e008fd94b60a0be"
-};
+const firebaseConfig = { apiKey: "AIzaSyDqTYRWnOALyjALg2Y5wSoCySoD9POoFjE", authDomain: "web-note-app-f928e.firebaseapp.com", databaseURL: "https://web-note-app-f928e-default-rtdb.firebaseio.com", projectId: "web-note-app-f928e", storageBucket: "web-note-app-f928e.appspot.com", messagingSenderId: "639121324059", appId: "1:639121324059:web:cbfaf64e008fd94b60a0be" };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
@@ -119,8 +139,7 @@ auth.onAuthStateChanged(user => {
   currentUser = user;
   document.getElementById('loginBtn').style.display = user ? 'none' : 'inline-block';
   document.getElementById('logoutBtn').style.display = user ? 'inline-block' : 'none';
-  renderStatic();
-  if (user) { loadShortcuts(); closeModal('loginModal'); }
+  renderAll();
 });
 
 document.getElementById('loginBtn').onclick = () => document.getElementById('loginModal').style.display = 'flex';
@@ -129,61 +148,78 @@ document.getElementById('logoutBtn').onclick = () => auth.signOut();
 function login() {
   const email = document.getElementById('emailInput').value;
   const password = document.getElementById('passwordInput').value;
-  auth.signInWithEmailAndPassword(email, password).catch(alert);
+  auth.signInWithEmailAndPassword(email, password).then(() => closeModal('loginModal')).catch(alert);
 }
-
 function register() {
   const email = document.getElementById('emailInput').value;
   const password = document.getElementById('passwordInput').value;
-  auth.createUserWithEmailAndPassword(email, password).catch(alert);
+  auth.createUserWithEmailAndPassword(email, password).then(() => closeModal('loginModal')).catch(alert);
 }
 
-function renderStatic() {
+function renderAll() {
   const container = document.getElementById('serviceContainer');
   container.innerHTML = '';
   services.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'service-card';
-    card.onclick = () => window.location.href = item.url;
-    card.innerHTML = `<div class="service-title">${item.title}</div>
-                      <img class="service-image" src="${item.img}">
-                      <div class="service-description">${item.desc}</div>`;
+    const card = createServiceCard(item);
     container.appendChild(card);
   });
+
+  if (currentUser) {
+    db.ref('users/' + currentUser.uid + '/shortcuts').once('value').then(snapshot => {
+      const data = snapshot.val() || {};
+      Object.entries(data).forEach(([key, item]) => {
+        const card = createCustomCard(item, key);
+        container.appendChild(card);
+      });
+      container.appendChild(createAddCard());
+    });
+  } else {
+    container.appendChild(createAddCard());
+  }
+}
+
+function createServiceCard(item) {
+  const card = document.createElement('div');
+  card.className = 'service-card';
+  card.onclick = () => window.location.href = item.url;
+  card.innerHTML = `<div class="service-title">${item.title}</div>
+                    <img class="service-image" src="${item.img}">
+                    <div class="service-description">${item.desc}</div>`;
+  return card;
+}
+
+function createCustomCard(item, key) {
+  const card = document.createElement('div');
+  card.className = 'service-card';
+  card.onclick = e => { if (!e.target.closest('.menu-btn') && !e.target.closest('.context-menu')) window.open(normalizeUrl(item.url), '_blank'); };
+  card.innerHTML = `<div class="service-title">${item.title}</div>
+                    <img class="service-image" src="${item.img}">
+                    <div class="service-description">${item.desc}</div>`;
+
+  const menuBtn = document.createElement('div');
+  menuBtn.className = 'menu-btn';
+  menuBtn.textContent = '⋮';
+  menuBtn.onclick = ev => {
+    ev.stopPropagation();
+    document.querySelectorAll('.context-menu').forEach(m => m.style.display = 'none');
+    menu.style.display = 'block';
+  };
+  card.appendChild(menuBtn);
+
+  const menu = document.createElement('div');
+  menu.className = 'context-menu';
+  menu.innerHTML = `<button onclick="startEdit('${key}','${item.title}','${item.desc}','${item.url}','${item.img}')">Edit</button>
+                    <button onclick="deleteShortcut('${key}')">Delete</button>`;
+  card.appendChild(menu);
+  return card;
+}
+
+function createAddCard() {
   const addCard = document.createElement('div');
   addCard.className = 'service-card';
   addCard.innerHTML = '<div class="add-card">+</div>';
   addCard.onclick = () => currentUser ? document.getElementById('addModal').style.display='flex' : document.getElementById('loginModal').style.display='flex';
-  container.appendChild(addCard);
-}
-
-function loadShortcuts() {
-  db.ref('users/' + currentUser.uid + '/shortcuts').once('value').then(snapshot => {
-    const data = snapshot.val() || {};
-    Object.entries(data).forEach(([key, item]) => {
-      const card = document.createElement('div');
-      card.className = 'service-card';
-      card.onclick = e => { if (!e.target.closest('.menu-btn') && !e.target.closest('.context-menu')) window.open(normalizeUrl(item.url), '_blank'); };
-      card.innerHTML = `<div class="service-title">${item.title}</div>
-                        <img class="service-image" src="${item.img}">
-                        <div class="service-description">${item.desc}</div>`;
-      const menuBtn = document.createElement('div');
-      menuBtn.className = 'menu-btn';
-      menuBtn.textContent = '⋮';
-      menuBtn.onclick = ev => {
-        ev.stopPropagation();
-        document.querySelectorAll('.context-menu').forEach(m => m.style.display = 'none');
-        menu.style.display = 'block';
-      };
-      card.appendChild(menuBtn);
-      const menu = document.createElement('div');
-      menu.className = 'context-menu';
-      menu.innerHTML = `<button onclick="startEdit('${key}','${item.title}','${item.desc}','${item.url}','${item.img}')">Edit</button>
-                        <button onclick="deleteShortcut('${key}')">Delete</button>`;
-      card.appendChild(menu);
-      document.getElementById('serviceContainer').appendChild(card);
-    });
-  });
+  return addCard;
 }
 
 function saveShortcut() {
@@ -197,12 +233,12 @@ function saveShortcut() {
     const reader = new FileReader();
     reader.onload = e => resizeImage(e.target.result, 256, 256, resized => {
       db.ref('users/' + currentUser.uid + '/shortcuts').push({ title, desc, url, img: resized });
-      closeModal('addModal'); renderStatic(); loadShortcuts();
+      closeModal('addModal'); renderAll();
     });
     reader.readAsDataURL(file);
   } else {
     db.ref('users/' + currentUser.uid + '/shortcuts').push({ title, desc, url, img: imgLink });
-    closeModal('addModal'); renderStatic(); loadShortcuts();
+    closeModal('addModal'); renderAll();
   }
 }
 
@@ -225,18 +261,18 @@ function updateShortcut() {
     const reader = new FileReader();
     reader.onload = e => resizeImage(e.target.result, 256, 256, resized => {
       db.ref('users/' + currentUser.uid + '/shortcuts/' + window.editKey).set({ title, desc, url, img: resized });
-      closeModal('editModal'); renderStatic(); loadShortcuts();
+      closeModal('editModal'); renderAll();
     });
     reader.readAsDataURL(file);
   } else {
     db.ref('users/' + currentUser.uid + '/shortcuts/' + window.editKey).set({ title, desc, url, img: imgLink });
-    closeModal('editModal'); renderStatic(); loadShortcuts();
+    closeModal('editModal'); renderAll();
   }
 }
 
 function deleteShortcut(key) {
   if (confirm("Are you sure?")) {
-    db.ref('users/' + currentUser.uid + '/shortcuts/' + key).remove().then(()=>{renderStatic();loadShortcuts()});
+    db.ref('users/' + currentUser.uid + '/shortcuts/' + key).remove().then(()=>renderAll());
   }
 }
 
@@ -262,3 +298,4 @@ themeBtn.onclick=()=>applyTheme(document.body.dataset.theme==='dark'?'light':'da
 applyTheme(localStorage.getItem('theme')||'light');
 </script>
 </body>
+</html>
