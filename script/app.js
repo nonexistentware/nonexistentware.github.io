@@ -77,19 +77,6 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
-  // Listen for auth state changes
-onAuthStateChanged(auth, (user) => {
-  const userNickname = document.getElementById('userNickname');
-  
-  if (user) {
-    // If the user is logged in, display their display name or email if Google login was used
-    userNickname.textContent = user.displayName || user.email;
-  } else {
-    // If no user is logged in, show 'Guest'
-    userNickname.textContent = 'Guest';
-  }
-});
-
   // Settings dropdowns must exist in the DOM
   const weekStartEl = document.getElementById('weekStart');
   const defaultStatusEl = document.getElementById('defaultStatus');
@@ -292,6 +279,7 @@ window.openPopup = (date, task = null, id = null) => {
   taskColor.value = task?.color || '#cccccc';
   taskStatus.value = task?.status || userSettings.defaultStatus;
   taskPriority.value = task?.priority || 'Low';
+  taskLocked.checked = task?.locked || false;
 };
 
 // window.openPopup = (date, task = null, id = null) => {
@@ -518,7 +506,8 @@ window.saveTask = () => {
     color: taskColor.value,
     status: taskStatus.value,
     priority: taskPriority.value,
-    updatedAt: now
+    updatedAt: now,
+    locked: taskLocked.checked
   };
   const path = `users/${uid()}/tasks/${selectedDay}`;
   const taskId = editingTaskId || push(ref(db, path)).key;
@@ -530,12 +519,18 @@ window.saveTask = () => {
 
 window.deleteTask = () => {
   if (!editingTaskId) return;
+  if (currentTaskData?.locked) {
+    alert("This task is locked and cannot be deleted.");
+    return;
+  }
   const path = `users/${uid()}/tasks/${selectedDay}/${editingTaskId}`;
   remove(ref(db, path)).then(() => {
     closePopup();
     renderWeek();
   });
 };
+
+
 
 function loadTasks(date) {
   
@@ -556,15 +551,16 @@ function loadTasks(date) {
 
         const priorityColor = data.priority === 'High' ? 'red' : data.priority === 'Medium' ? 'orange' : 'green';
         const statusColor = data.status === 'Done' ? 'green' : data.status === 'In Progress' ? 'blue' : 'gray';
+        const titleDisplay = data.locked ? `🔒 ${data.title}` : data.title;
 
         div.innerHTML = `
-          <strong>${data.title}</strong><br>
-          <div style="display: flex; gap: 5px; margin: 5px 0;">
-            <span style="background: ${statusColor}; color: white; padding: 2px 6px; border-radius: 6px; font-size: 0.75rem;">${data.status || '-'}</span>
-            <span style="background: ${priorityColor}; color: white; padding: 2px 6px; border-radius: 6px; font-size: 0.75rem;">${data.priority || '-'}</span>
-          </div>
-          <small>${new Date(data.updatedAt).toLocaleString()}</small>
-        `;
+  <strong>${titleDisplay}</strong><br>
+  <div style="display: flex; gap: 5px; margin: 5px 0;">
+    <span style="background: ${statusColor}; color: white; padding: 2px 6px; border-radius: 6px; font-size: 0.75rem;">${data.status || '-'}</span>
+    <span style="background: ${priorityColor}; color: white; padding: 2px 6px; border-radius: 6px; font-size: 0.75rem;">${data.priority || '-'}</span>
+  </div>
+  <small>${new Date(data.updatedAt).toLocaleString()}</small>
+`;
 
         div.draggable = true;
         div.addEventListener('dragstart', e => {

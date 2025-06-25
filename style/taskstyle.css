@@ -436,18 +436,17 @@ body.dark #settingsPopup .close-btn {
   color: white;
 }
 
-/* user/name */
 #userName {
-  display: flex; /* Ensures both elements are on the same row */
-  align-items: center;
+  display: flex; /* This will align both h1 elements on the same row */
+  align-items: center; /* Vertically centers the text */
 }
 
 #userName h1 {
-  margin: 0;  /* Removes default margin from h1 */
+  margin: 0; /* Removes default margin of h1 */
   font-size: 1.5rem;
 }
 
 #userNickname {
   margin-left: 10px; /* Adds space between "Welcome" and the username */
-  font-size: 1.5rem;
+  font-size: 1.5rem; /* Ensures the username has the same font size */
 }
