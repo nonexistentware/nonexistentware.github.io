@@ -40,6 +40,9 @@ body[data-theme="dark"] .service-image {
   filter: brightness(0.7); /* adjust darkness level (0.7 = 70% brightness) */
 }
 
+body[data-theme="dark"] #userAvatar.default-icon {
+  filter: brightness(1.5) contrast(1.2);
+}
 
     #topButtons {position:fixed; top:16px; right:24px; display:flex; gap:12px; z-index:1001;}
     #topButtons button {border:1px solid var(--text-color); background:transparent; color:var(--text-color); padding:8px 14px; border-radius:6px; cursor:pointer;}
@@ -75,7 +78,6 @@ body[data-theme="dark"] .service-image {
   }
 }
 
-
     .service-card {position:relative; width:250px; height:250px; background:var(--card-bg); border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.15); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--text-color); transition:transform 0.2s; cursor:pointer;}
     .service-card:hover {transform:translateY(-5px);}
     .service-title {font-size:18px; font-weight:500; margin:10px 0;}
@@ -89,7 +91,7 @@ body[data-theme="dark"] .service-image {
     .modal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center;}
     .modal-content {background:var(--card-bg); padding:20px; border-radius:10px; width:90%; max-width:400px; box-shadow: 0 0 10px rgba(0,0,0,0.5); color:var(--text-color); position: relative;}
     .modal-close {position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer;}
-    .modal-content input, .modal-content textarea {width:100%; margin:8px 0; padding:10px; background:var(--bg-color); color:var(--text-color); border:1px solid #555; border-radius:5px;}
+    .modal-content input, .modal-content textarea {width:95%; margin:8px 0; padding:10px; background:var(--bg-color); color:var(--text-color); border:1px solid #555; border-radius:5px;}
     .modal-content button {margin-top:12px; padding:10px 20px; border:none; background:#3f51b5; color:#fff; border-radius:4px; cursor:pointer;}
     .modal-content input[type=file] { background: var(--bg-color); color: var(--text-color); }
     
@@ -105,6 +107,12 @@ body[data-theme="dark"] .service-image {
   <button id="logoutBtn" style="display:none">🚪 Logout</button>
   <button id="themeToggle">🌗 Theme</button>
 </div>
+
+<div id="userGreeting" style="position:fixed; top:16px; left:24px; display:flex; align-items:center; gap:10px; z-index:1001; color:var(--text-color); font-size:16px; display:none;">
+  <img id="userAvatar" src="./img/user.png" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
+  <span id="userName"></span>
+</div>
+
 
 <div class="main-content">
   <div id="serviceContainer" class="services-row"></div>
@@ -139,6 +147,8 @@ body[data-theme="dark"] .service-image {
   <p>Could be used the same credentials as used for the Cloud tasks.</p>
   <input id="emailInput" placeholder="Email">
   <input id="passwordInput" type="password" placeholder="Password">
+  <p>To login through the Google account, use this <a href="./services/login.html" target="_blank" rel="noopener noreferrer">link</a> to the login page. 
+  Reload this page after logged inot the account.</p>
   <button onclick="login()">Login</button>
   <button onclick="register()">Register</button>
 </div></div>
@@ -167,11 +177,52 @@ function normalizeUrl(url) {
   return window.location.origin + (url.startsWith('/') ? url : '/' + url);
 }
 
+// auth.onAuthStateChanged(user => {
+//   currentUser = user;
+//   document.getElementById('loginBtn').style.display = user ? 'none' : 'inline-block';
+//   document.getElementById('logoutBtn').style.display = user ? 'inline-block' : 'none';
+//   renderAll();
+// });
+
+function updateDefaultAvatar() {
+  const avatarEl = document.getElementById('userAvatar');
+  if (avatarEl && avatarEl.classList.contains('default-icon')) {
+    const currentTheme = document.body.dataset.theme;
+    avatarEl.src = currentTheme === 'dark' ? './img/user_light.png' : './img/user.png';
+  }
+}
+
 auth.onAuthStateChanged(user => {
   currentUser = user;
+
   document.getElementById('loginBtn').style.display = user ? 'none' : 'inline-block';
   document.getElementById('logoutBtn').style.display = user ? 'inline-block' : 'none';
+
+  const greetingEl = document.getElementById('userGreeting');
+  const nameEl = document.getElementById('userName');
+  const avatarEl = document.getElementById('userAvatar');
+
+  greetingEl.style.display = 'flex'; // Always show greeting
+
+  if (user) {
+    const displayName = user.displayName || user.email || 'User';
+    nameEl.textContent = `Hi, ${displayName}`;
+
+    if (user.photoURL) {
+      avatarEl.src = user.photoURL;
+      avatarEl.classList.remove('default-icon');
+    } else {
+      avatarEl.src = './img/user.png';
+      avatarEl.classList.add('default-icon');
+    }
+  } else {
+    nameEl.textContent = 'Hi, User';
+    avatarEl.src = './img/user.png';
+    avatarEl.classList.add('default-icon');
+  }
+
   renderAll();
+  updateDefaultAvatar();
 });
 
 document.getElementById('loginBtn').onclick = () => document.getElementById('loginModal').style.display = 'flex';
@@ -332,10 +383,24 @@ function resizeImage(dataUrl, maxW, maxH, callback) {
 
 function closeModal(id) { document.getElementById(id).style.display='none'; }
 
-const themeBtn = document.getElementById('themeToggle');
-function applyTheme(theme){document.body.dataset.theme=theme;localStorage.setItem('theme',theme);themeBtn.textContent=theme==='dark'?'☀️ Theme':'🌗 Theme';}
-themeBtn.onclick=()=>applyTheme(document.body.dataset.theme==='dark'?'light':'dark');
-applyTheme(localStorage.getItem('theme')||'light');
+document.addEventListener("DOMContentLoaded", () => {
+  const themeBtn = document.getElementById('themeToggle');
+  const avatarEl = document.getElementById('userAvatar');
+
+  function applyTheme(theme) {
+    document.body.dataset.theme = theme;
+    localStorage.setItem('theme', theme);
+    themeBtn.textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
+
+    if (avatarEl && avatarEl.classList.contains('default-icon')) {
+      avatarEl.src = theme === 'dark' ? './img/user_light.png' : './img/user.png';
+    }
+  }
+
+  themeBtn.onclick = () => applyTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark');
+  applyTheme(localStorage.getItem('theme') || 'light');
+});
+
 </script>
 </body>
 </html>
