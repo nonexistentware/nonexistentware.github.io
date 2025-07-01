@@ -1,9 +1,18 @@
 :root {
   color-scheme: light dark;
-  --bg: light-dark(#f9f9f9, #222);
-  --text: light-dark(#333, #eee);
-  --btn-bg: light-dark(#fff, #444);
-  --btn-text: light-dark(#333, #eee);
+  --bg: #f9f9f9;
+  --text: #333;
+  --btn-bg: #fff;
+  --btn-text: #333;
+  --bg-image: url('/img/fieldday.png');
+}
+
+body[data-theme="dark"] {
+  --bg: #222;
+  --text: #eee;
+  --btn-bg: #444;
+  --btn-text: #eee;
+  --bg-image: url('/img/fieldnight.png');
 }
 
 body {
@@ -12,24 +21,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--bg-image);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
   color: var(--text);
   font-family: Arial, sans-serif;
   text-align: center;
-}
-
-:root {
-  --bg: #f9f9f9;
-  --text: #333;
-  --btn-bg: #fff;
-  --btn-text: #333;
-}
-
-body[data-theme="dark"] {
-  --bg: #222;
-  --text: #eee;
-  --btn-bg: #444;
-  --btn-text: #eee;
+  transition: background 0.3s, color 0.3s, background-image 0.3s;
 }
 
 
@@ -41,29 +41,42 @@ body[data-theme="dark"] {
 .not-found-container h1 {
   font-size: 4rem;
   margin-bottom: 1rem;
+  color: var(--text);
 }
 
 .not-found-container code {
   display: block;
   margin: 1rem 0;
   padding: 0.5rem;
-  /* background: light-dark(#eee, #333); */
   border-radius: 4px;
   word-wrap: break-word;
+  background: #eee;
+  color: #000;
+  transition: background 0.3s, color 0.3s;
 }
 
 .not-found-container a {
   display: inline-block;
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
-  /* background: var(--btn-bg); */
+  background: var(--btn-bg);
   color: var(--btn-text);
-  /* border: 2px solid currentColor; */
   border-radius: 4px;
   text-decoration: none;
-  transition: opacity .2s;
+  transition: opacity 0.2s, background 0.3s, color 0.3s;
 }
 
 .not-found-container a:hover {
   opacity: 0.8;
+}
+
+/* Dark theme overrides for container elements */
+body[data-theme="dark"] .not-found-container code {
+  background: #333;
+  color: #eee;
+}
+
+body[data-theme="dark"] .not-found-container a {
+  background: #444;
+  color: #eee;
 }
