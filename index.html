@@ -36,6 +36,10 @@ body[data-theme="dark"] {
   --bg-image: url('./img/fieldnight.png'); /* set to your correct path */
 }
 
+body[data-theme="dark"] .service-image {
+  filter: brightness(0.7); /* adjust darkness level (0.7 = 70% brightness) */
+}
+
 
     #topButtons {position:fixed; top:16px; right:24px; display:flex; gap:12px; z-index:1001;}
     #topButtons button {border:1px solid var(--text-color); background:transparent; color:var(--text-color); padding:8px 14px; border-radius:6px; cursor:pointer;}
