@@ -6,6 +6,21 @@
   <link rel="icon" type="image/png" href="/img/favgear2.png" />
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; transition: background 0.3s, color 0.3s; }
+    html, body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;
+  transition: background-color 0.3s, color 0.3s, background-image 0.3s;
+  font-family: Arial, sans-serif;
+}
+
     .container { margin-top: 20px; width: 95%; max-width: 1300px; text-align: center; }
     .top-controls { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
     button, select { padding: 10px 15px; cursor: pointer; }
@@ -19,19 +34,36 @@
     .badge.green { background: green; }
     .badge.orange { background: orange; }
     .badge.red { background: red; }
-    :root {
-      --bg-light: #f0f0f0; --bg-dark: #121212;
-      --text-light: #000; --text-dark: #fff;
-      --header-bg-light: #333; --header-bg-dark: #222;
-      --table-bg-light: #fff; --table-bg-dark: #333;
-      --border-color-light: #ccc; --border-color-dark: #555;
-    }
-    body.light { background: var(--bg-light); color: var(--text-light);
-      --header-bg: var(--header-bg-light); --header-text: white;
-      --table-bg: var(--table-bg-light); --border-color: var(--border-color-light); }
-    body.dark { background: var(--bg-dark); color: var(--text-dark);
-      --header-bg: var(--header-bg-dark); --header-text: white;
-      --table-bg: var(--table-bg-dark); --border-color: var(--border-color-dark); }
+    /* Existing theme variables */
+:root {
+  --bg-light: #f0f0f0; --bg-dark: #121212;
+  --text-light: #000; --text-dark: #fff;
+  --header-bg-light: #333; --header-bg-dark: #222;
+  --table-bg-light: #fff; --table-bg-dark: #333;
+  --border-color-light: #ccc; --border-color-dark: #555;
+}
+
+/* Light theme with dynamic background */
+body.light {
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  --header-bg: var(--header-bg-light);
+  --header-text: white;
+  --table-bg: var(--table-bg-light);
+  --border-color: var(--border-color-light);
+  --bg-image: url('/img/fieldday.png');
+}
+
+/* Dark theme with dynamic background */
+body.dark {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+  --header-bg: var(--header-bg-dark);
+  --header-text: white;
+  --table-bg: var(--table-bg-dark);
+  --border-color: var(--border-color-dark);
+  --bg-image: url('/img/fieldnight.png');
+}
   </style>
 </head>
 

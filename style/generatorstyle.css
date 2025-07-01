@@ -9,6 +9,36 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+  background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: background-color 0.3s, color 0.3s, background-image 0.3s;
+}
+
+/* Light theme defaults */
+:root {
+  --bg-color: #ffffff; /* your current light background */
+  --bg-image: url('/img/fieldday.png'); /* path to your day image */
+}
+
+/* Dark theme overrides */
+body.dark {
+  --bg-color: #121212; /* your existing dark background */
+  --bg-image: url('/img/fieldnight.png'); /* path to your night image */
+}
+
+body {
+  background-color: #ffffff;
+}
+
+body.dark {
+  background-color: #1a202c;
+}
+
 .container {
   text-align: center;
   background-color: white;

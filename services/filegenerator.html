@@ -6,15 +6,45 @@
   <title>Table Generator</title>
   <link rel="icon" type="image/png" href="/img/favgear2.png" />
   <style>
+
     * {
       box-sizing: border-box;
     }
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #ffffff;
-      transition: background-color 0.3s, color 0.3s;
-    }
+
+    html, body {
+  height: 100vh;              /* force them to fill the full viewport height */
+  width: 100vw;               /* ensure full viewport width too */
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;     /* more natural scaling than 100% 100% */
+  transition: background-color 0.3s, color 0.3s, background-image 0.3s;
+}
+
+
+/* Light theme defaults */
+:root {
+  --bg-color: #ffffff;
+  --bg-image: url('/img/fieldday.png');
+}
+
+/* Dark theme overrides */
+body.dark {
+  --bg-color: #121212;
+  --bg-image: url('/img/fieldnight.png');
+}
+
+body {
+  background-color: #ffffff;
+}
+
+body.dark {
+  background-color: #1a202c;
+}
 
     body.dark {
       background-color: #121212;

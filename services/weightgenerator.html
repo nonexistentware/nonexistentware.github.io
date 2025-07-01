@@ -7,15 +7,49 @@
   <!-- Favicon for browser tab -->
   <link rel="icon" type="image/png" href="/img/favgear2.png" />
   <style>
+
+    html, body {
+  height: 100vh;                   /* Fill full viewport height */
+  width: 100vw;                    /* Fill full viewport width */
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s, background-image 0.3s;
+  font-family: Arial, sans-serif;
+}
+
+
     :root {
-      --bg-light: #f0f0f0;
-      --bg-dark: #222;
-      --text-light: #000;
-      --text-dark: #fff;
-      --input-bg-light: #fff;
-      --input-bg-dark: #333;
-      --input-border: #ccc;
-    }
+  --bg-light: #f0f0f0;
+  --bg-dark: #222;
+  --text-light: #000;
+  --text-dark: #fff;
+  --input-bg-light: #fff;
+  --input-bg-dark: #333;
+  --input-border: #ccc;
+  --bg-color: var(--bg-light);
+  --text-color: var(--text-light);
+  --bg-image: url('/img/fieldday.png'); /* Day background image */
+}
+
+body.dark {
+  --bg-color: var(--bg-dark);
+  --text-color: var(--text-dark);
+  --bg-image: url('/img/fieldnight.png'); /* Night background image */
+}
+
+body.dark label,
+body.dark .size-display,
+body.dark .container {
+  color: white;
+}
+
 
     html, body {
       height: 100%;
@@ -24,11 +58,6 @@
       background-color: var(--bg-light);
       color: var(--text-light);
       transition: background-color 0.3s, color 0.3s;
-    }
-
-    body.dark {
-      background-color: var(--bg-dark);
-      color: var(--text-dark);
     }
 
     .container {

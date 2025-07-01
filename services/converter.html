@@ -24,6 +24,49 @@ body.dark {
   color: #f0f0f0;
 }
 
+html, body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;
+  transition: background-color 0.3s, color 0.3s, background-image 0.3s;
+}
+
+/* Light theme defaults */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --input-bg: #f9f9f9;
+  --input-text: #000000;
+  --border-color: #ccc;
+  --button-bg: #f0f0f0;
+  --button-text: #000000;
+  --button-border: #ccc;
+  --response-bg: #f4f4f4;
+  --bg-image: url('/img/fieldday.png'); /* Day background image */
+}
+
+/* Dark theme overrides */
+body.dark {
+  --bg-color: #121212;
+  --text-color: #f0f0f0;
+  --input-bg: #1e1e1e;
+  --input-text: #ffffff;
+  --border-color: #444;
+  --button-bg: #2a2a2a;
+  --button-text: #ffffff;
+  --button-border: #666;
+  --response-bg: #1e1e1e;
+  --bg-image: url('/img/fieldnight.png'); /* Night background image */
+}
+
+
 /* Themed textarea */
 textarea {
   width: 100%;

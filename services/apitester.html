@@ -11,6 +11,7 @@
       font-family: Arial, sans-serif;
       margin: 40px;
     }
+    
     #bodyType {
       margin-bottom: 10px;
     }
@@ -36,7 +37,6 @@
       margin-top: 15px;
     }
 
-    /* theme change */
     :root {
   --bg-color: #ffffff;
   --text-color: #000000;
@@ -47,8 +47,10 @@
   --button-text: #000000;
   --button-border: #ccc;
   --response-bg: #f4f4f4;
+  --bg-image: url('/img/fieldday.png'); /* Day background image */
 }
 
+/* Dark theme overrides */
 body.dark {
   --bg-color: #121212;
   --text-color: #f0f0f0;
@@ -59,6 +61,7 @@ body.dark {
   --button-text: #ffffff;
   --button-border: #666;
   --response-bg: #1e1e1e;
+  --bg-image: url('/img/fieldnight.png'); /* Night background image */
 }
 
 body {
