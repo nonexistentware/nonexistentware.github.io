@@ -77,11 +77,23 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
-  // Settings dropdowns must exist in the DOM
+  // ✅ Display user name/email in header
+  const userNameSpan = document.getElementById('userNickname');
+  if (userNameSpan) {
+    userNameSpan.textContent = user.displayName?.trim() || user.email;
+  }
+
+  // ✅ Save to userDirectory if not there
+  const userRef = ref(db, `userDirectory/${user.uid}`);
+  const snapshot = await get(userRef);
+  if (!snapshot.exists()) {
+    await set(userRef, { email: user.email });
+  }
+
+  // Init user settings
   const weekStartEl = document.getElementById('weekStart');
   const defaultStatusEl = document.getElementById('defaultStatus');
 
-  // Load persisted settings
   if (weekStartEl) {
     weekStartEl.value = userSettings.weekStart;
     weekStartEl.onchange = () => {
@@ -99,9 +111,9 @@ onAuthStateChanged(auth, async user => {
     };
   }
 
-  // Finally render week
   renderWeek();
 });
+
 
 
 //change status 
