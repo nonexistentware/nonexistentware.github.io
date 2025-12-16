@@ -6,16 +6,13 @@
   <title>The SNDBX - Online services</title>
   <link rel="canonical" href="https://www.thesndbx.online">
    <script type="application/ld+json">
-// Schema.org JSON-LD for SNDBX Organization
-// This structured data helps search engines understand the content and context of the page.
 {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "SNDBX",
   "url": "https://thesndbx.online",
   "logo": "https://www.thesndbx.online/img/favgear2.png",
-  "description": "SNDBX provides online tools for API testing, text typs converter (text -> json -> yaml), File generators, Temporary email, File with weight and different types ,Online dashboard with tasks and more.",Add commentMore actions
-
+  "description": "SNDBX provides online tools for API testing, text types converter (text -> json -> yaml), File generators, Temporary email, File with weight and different types, Online dashboard with tasks and more."
 }
 </script>
    <!-- SEO -->
@@ -34,96 +31,8 @@
   <meta property="og:image" content="https://www.thesndbx.online/img/favgear2.png" />
   <link rel="icon" type="image/png" src="/img/favg.png" alt="THESNDBX site logo"/>
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+  <link rel="stylesheet" href="/style/index.css">
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-  <style>
-    html, body {
-  height: 100%;
-  margin: 0;
-  font-family: Roboto, sans-serif;
-  color: var(--text-color);
-  transition: 0.3s;
-  overflow-x: hidden;
-  background-color: var(--bg-color);
-  background-image: var(--bg-image);
-  background-position: center center;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-:root {
-  --bg-color: #f5f5f5;
-  --text-color: #000;
-  --card-bg: #fff;
-  --bg-image: url('./img/fieldday.png'); /* set to your correct path */
-}
-
-body[data-theme="dark"] {
-  --bg-color: #121212;
-  --text-color: #eee;
-  --card-bg: #1e1e1e;
-  --bg-image: url('./img/fieldnight.png'); /* set to your correct path */
-}
-
-body[data-theme="dark"] .service-image {
-  filter: brightness(0.7); /* adjust darkness level (0.7 = 70% brightness) */
-}
-
-body[data-theme="dark"] #userAvatar.default-icon {
-  filter: brightness(1.5) contrast(1.2);
-}
-
-    #topButtons {position:fixed; top:16px; right:24px; display:flex; gap:12px; z-index:1001;}
-    #topButtons button {border:1px solid var(--text-color); background:transparent; color:var(--text-color); padding:8px 14px; border-radius:6px; cursor:pointer;}
-    
-    .main-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 60vh;
-  padding: 60px 0 80px 0;  /* top right bottom left */
-  gap: 40px;
-  /* background: var(--bg-color); ← REMOVE or COMMENT OUT THIS LINE */
-}
-
-    .services-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  justify-items: center;
-  max-width: 1100px;
-  margin: 0 auto;
-  width: 100%;
-}
-@media (max-width: 1000px) {
-  .services-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .services-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-    .service-card {position:relative; width:250px; height:250px; background:var(--card-bg); border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.15); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--text-color); transition:transform 0.2s; cursor:pointer;}
-    .service-card:hover {transform:translateY(-5px);}
-    .service-title {font-size:18px; font-weight:500; margin:10px 0;}
-    .service-image {width:150px; height:150px; object-fit:cover; border-radius:4px;}
-    .service-description {font-size:13px; margin-top:auto; padding: 5px;}
-    .add-card {font-size:80px; color:#888; display:flex; justify-content:center; align-items:center; height:100%;}
-    .menu-btn {position:absolute; top:10px; right:10px; font-size:24px; cursor:pointer;}
-    .context-menu {position:absolute; top:40px; right:10px; background:var(--card-bg); border:1px solid #555; border-radius:5px; display:none; z-index:9999;}
-    .context-menu button {display:block; width:100%; padding:8px; border:none; background:none; color:var(--text-color); text-align:left; cursor:pointer;}
-    .context-menu button:hover {background: rgba(255,255,255,0.1);}
-    .modal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center;}
-    .modal-content {background:var(--card-bg); padding:20px; border-radius:10px; width:90%; max-width:400px; box-shadow: 0 0 10px rgba(0,0,0,0.5); color:var(--text-color); position: relative;}
-    .modal-close {position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer;}
-    .modal-content input, .modal-content textarea {width:95%; margin:8px 0; padding:10px; background:var(--bg-color); color:var(--text-color); border:1px solid #555; border-radius:5px;}
-    .modal-content button {margin-top:12px; padding:10px 20px; border:none; background:#3f51b5; color:#fff; border-radius:4px; cursor:pointer;}
-    .modal-content input[type=file] { background: var(--bg-color); color: var(--text-color); }
-    
-  </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -131,13 +40,22 @@ body[data-theme="dark"] #userAvatar.default-icon {
 <body>
 
 <div id="topButtons">
-  <button id="loginBtn">🔐 Login</button>
-  <button id="logoutBtn" style="display:none">🚪 Logout</button>
-  <button id="themeToggle">🌗 Theme</button>
+  <button id="loginBtn" aria-label="Login to your account">
+    <span class="btn-icon" aria-hidden="true">🔐</span>
+    <span>Login</span>
+  </button>
+  <button id="logoutBtn" style="display:none" aria-label="Logout from your account">
+    <span class="btn-icon" aria-hidden="true">🚪</span>
+    <span>Logout</span>
+  </button>
+  <button id="themeToggle" aria-label="Toggle theme">
+    <span class="btn-icon" aria-hidden="true">🌗</span>
+    <span>Theme</span>
+  </button>
 </div>
 
-<div id="userGreeting" style="position:fixed; top:16px; left:24px; display:flex; align-items:center; gap:10px; z-index:1001; color:var(--text-color); font-size:16px; display:none;">
-  <img id="userAvatar" src="./img/user.png" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
+<div id="userGreeting" class="hidden" aria-live="polite">
+  <img id="userAvatar" src="./img/user.png" alt="User avatar" class="default-icon">
   <span id="userName"></span>
 </div>
 
@@ -147,289 +65,61 @@ body[data-theme="dark"] #userAvatar.default-icon {
 </div>
 
 <!-- Modals -->
-<div id="addModal" class="modal"><div class="modal-content">
-  <div class="modal-close" onclick="closeModal('addModal')">&times;</div>
-  <h3>Add Shortcut</h3>
-  <input id="newTitle" placeholder="Title">
+<div id="addModal" class="modal" role="dialog" aria-labelledby="addModalTitle" aria-hidden="true">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('addModal')" aria-label="Close modal">&times;</button>
+    <h3 id="addModalTitle">Add Shortcut</h3>
+    <label for="newTitle" class="sr-only">Title</label>
+    <input id="newTitle" placeholder="Title" required aria-required="true">
+    <label for="newDesc" class="sr-only">Description</label>
   <textarea id="newDesc" placeholder="Description"></textarea>
-  <input id="newUrl" placeholder="URL">
+    <label for="newUrl" class="sr-only">URL</label>
+    <input id="newUrl" placeholder="URL" required aria-required="true">
+    <label for="newImgLink" class="sr-only">Image URL (optional)</label>
   <input id="newImgLink" placeholder="Image URL (optional)">
-  <input id="newImgFile" type="file" accept="image/*">
+    <label for="newImgFile">Upload image file</label>
+    <input id="newImgFile" type="file" accept="image/*" aria-label="Upload image file">
   <button onclick="saveShortcut()">Save</button>
-</div></div>
+  </div>
+</div>
 
-<div id="editModal" class="modal"><div class="modal-content">
-  <div class="modal-close" onclick="closeModal('editModal')">&times;</div>
-  <h3>Edit Shortcut</h3>
-  <input id="editTitle" placeholder="Title">
+<div id="editModal" class="modal" role="dialog" aria-labelledby="editModalTitle" aria-hidden="true">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('editModal')" aria-label="Close modal">&times;</button>
+    <h3 id="editModalTitle">Edit Shortcut</h3>
+    <label for="editTitle" class="sr-only">Title</label>
+    <input id="editTitle" placeholder="Title" required aria-required="true">
+    <label for="editDesc" class="sr-only">Description</label>
   <textarea id="editDesc" placeholder="Description"></textarea>
-  <input id="editUrl" placeholder="URL">
+    <label for="editUrl" class="sr-only">URL</label>
+    <input id="editUrl" placeholder="URL" required aria-required="true">
+    <label for="editImgLink" class="sr-only">Image URL (optional)</label>
   <input id="editImgLink" placeholder="Image URL (optional)">
-  <input id="editImgFile" type="file" accept="image/*">
+    <label for="editImgFile">Upload image file</label>
+    <input id="editImgFile" type="file" accept="image/*" aria-label="Upload image file">
   <button onclick="updateShortcut()">Update</button>
-</div></div>
+  </div>
+</div>
 
-<div id="loginModal" class="modal"><div class="modal-content">
-  <div class="modal-close" onclick="closeModal('loginModal')">&times;</div>
-  <h3>Login</h3>
+<div id="loginModal" class="modal" role="dialog" aria-labelledby="loginModalTitle" aria-hidden="true">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close modal">&times;</button>
+    <h3 id="loginModalTitle">Login</h3>
   <p>Could be used the same credentials as used for the Cloud tasks.</p>
-  <input id="emailInput" placeholder="Email">
-  <input id="passwordInput" type="password" placeholder="Password">
+    <label for="emailInput" class="sr-only">Email</label>
+    <input id="emailInput" type="email" placeholder="Email" required aria-required="true">
+    <label for="passwordInput" class="sr-only">Password</label>
+    <input id="passwordInput" type="password" placeholder="Password" required aria-required="true">
   <p>To login through the Google account, use this <a href="./services/login.html" target="_blank" rel="noopener noreferrer">link</a> to the login page. 
-  Reload this page after logged inot the account.</p>
+    Reload this page after logged into the account.</p>
   <button onclick="login()">Login</button>
   <button onclick="register()">Register</button>
-</div></div>
+  </div>
+</div>
 
-<script>
-const firebaseConfig = { apiKey: "AIzaSyDqTYRWnOALyjALg2Y5wSoCySoD9POoFjE", authDomain: "web-note-app-f928e.firebaseapp.com", databaseURL: "https://web-note-app-f928e-default-rtdb.firebaseio.com", projectId: "web-note-app-f928e", storageBucket: "web-note-app-f928e.appspot.com", messagingSenderId: "639121324059", appId: "1:639121324059:web:cbfaf64e008fd94b60a0be" };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-let currentUser = null;
-
-const services = [
-  { title:"Cloud tasks", img:"/img/cloudtask.png", desc:"Create tasks and save them in the cloud.", url:"services/login.html" },
-  { title:"Csv generator", img:"/img/csv.png", desc:"Generate CSV files.", url:"services/filegenerator.html" },
-  { title:"API online", img:"/img/api.png", desc:"Online API tester.", url:"services/apitester.html" },
-  { title:"Converter", img:"/img/converter.png", desc:"Convert formats.", url:"services/converter.html" },
-  { title:"File with weight", img:"/img/weight.png", desc:"Create files with custom size.", url:"services/weightgenerator.html" },
-  { title:"Temp email", img:"/img/letter.png", desc:"Temporary email.", url:"services/email.html" },
-  { title:"Proxy list", img:"/img/proxyimg.png", desc:"Proxy servers list.", url:"services/proxylist.html" },
-  { title:"What's new", img:"/img/appnews.png", desc:"Latest updates.", url:"services/newspage.html" },
-  {title:"Online game: CV, please", img:"/img/cvplease1.png", desc: "You need to find candidate that fits.", href:"https://www.cvplease.online",target: "_blank"}
-];
-
-function normalizeUrl(url) {
-  if (/^https?:\/\//i.test(url)) return url;
-  if (/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(url)) return 'https://' + url;
-  return window.location.origin + (url.startsWith('/') ? url : '/' + url);
-}
-
-// auth.onAuthStateChanged(user => {
-//   currentUser = user;
-//   document.getElementById('loginBtn').style.display = user ? 'none' : 'inline-block';
-//   document.getElementById('logoutBtn').style.display = user ? 'inline-block' : 'none';
-//   renderAll();
-// });
-
-function updateDefaultAvatar() {
-  const avatarEl = document.getElementById('userAvatar');
-  if (avatarEl && avatarEl.classList.contains('default-icon')) {
-    const currentTheme = document.body.dataset.theme;
-    avatarEl.src = currentTheme === 'dark' ? './img/user_light.png' : './img/user.png';
-  }
-}
-
-auth.onAuthStateChanged(user => {
-  currentUser = user;
-
-  document.getElementById('loginBtn').style.display = user ? 'none' : 'inline-block';
-  document.getElementById('logoutBtn').style.display = user ? 'inline-block' : 'none';
-
-  const greetingEl = document.getElementById('userGreeting');
-  const nameEl = document.getElementById('userName');
-  const avatarEl = document.getElementById('userAvatar');
-
-  greetingEl.style.display = 'flex'; // Always show greeting
-
-  if (user) {
-    const displayName = user.displayName || user.email || 'User';
-    nameEl.textContent = `Hi, ${displayName}`;
-
-    if (user.photoURL) {
-      avatarEl.src = user.photoURL;
-      avatarEl.classList.remove('default-icon');
-    } else {
-      avatarEl.src = './img/user.png';
-      avatarEl.classList.add('default-icon');
-    }
-  } else {
-    nameEl.textContent = 'Hi, User';
-    avatarEl.src = './img/user.png';
-    avatarEl.classList.add('default-icon');
-  }
-
-  renderAll();
-  updateDefaultAvatar();
-});
-
-document.getElementById('loginBtn').onclick = () => document.getElementById('loginModal').style.display = 'flex';
-document.getElementById('logoutBtn').onclick = () => auth.signOut();
-
-function login() {
-  const email = document.getElementById('emailInput').value;
-  const password = document.getElementById('passwordInput').value;
-  auth.signInWithEmailAndPassword(email, password).then(() => closeModal('loginModal')).catch(alert);
-}
-function register() {
-  const email = document.getElementById('emailInput').value;
-  const password = document.getElementById('passwordInput').value;
-  auth.createUserWithEmailAndPassword(email, password).then(() => closeModal('loginModal')).catch(alert);
-}
-
-function renderAll() {
-  const container = document.getElementById('serviceContainer');
-  container.innerHTML = '';
-  services.forEach(item => {
-    const card = createServiceCard(item);
-    container.appendChild(card);
-  });
-
-  if (currentUser) {
-    db.ref('users/' + currentUser.uid + '/shortcuts').once('value').then(snapshot => {
-      const data = snapshot.val() || {};
-      Object.entries(data).forEach(([key, item]) => {
-        const card = createCustomCard(item, key);
-        container.appendChild(card);
-      });
-      container.appendChild(createAddCard());
-    });
-  } else {
-    container.appendChild(createAddCard());
-  }
-}
-
-function createServiceCard(item) {
-  const card = document.createElement('div');
-  card.className = 'service-card';
-  card.onclick = () => window.location.href = item.url;
-  card.innerHTML = `<div class="service-title">${item.title}</div>
-                    <img class="service-image" src="${item.img}">
-                    <div class="service-description">${item.desc}</div>`;
-  return card;
-}
-
-function createCustomCard(item, key) {
-  const card = document.createElement('div');
-  card.className = 'service-card';
-  card.onclick = e => { if (!e.target.closest('.menu-btn') && !e.target.closest('.context-menu')) window.open(normalizeUrl(item.url), '_blank'); };
-  card.innerHTML = `<div class="service-title">${item.title}</div>
-                    <img class="service-image" src="${item.img}">
-                    <div class="service-description">${item.desc}</div>`;
-
-  const menuBtn = document.createElement('div');
-  menuBtn.className = 'menu-btn';
-  menuBtn.textContent = '⋮';
-  menuBtn.onclick = ev => {
-    ev.stopPropagation();
-    document.querySelectorAll('.context-menu').forEach(m => m.style.display = 'none');
-    menu.style.display = 'block';
-  };
-  card.appendChild(menuBtn);
-
-  const menu = document.createElement('div');
-  menu.className = 'context-menu';
-  menu.innerHTML = `<button onclick="startEdit('${key}','${item.title}','${item.desc}','${item.url}','${item.img}')">Edit</button>
-                    <button onclick="deleteShortcut('${key}')">Delete</button>`;
-  card.appendChild(menu);
-  return card;
-}
-
-function createAddCard() {
-  const addCard = document.createElement('div');
-  addCard.className = 'service-card';
-  if (currentUser) {
-  addCard.innerHTML = '<div class="add-card">+</div>';
-} else {
-  addCard.innerHTML = `
-    <div class="add-card">+</div>
-    <div style="font-size:14px; margin-top:10px; text-align:center;">
-      Login or create account to add shortcut
-    </div>`;
-}
-  addCard.onclick = () => currentUser ? document.getElementById('addModal').style.display='flex' : document.getElementById('loginModal').style.display='flex';
-  return addCard;
-}
-
-function saveShortcut() {
-  const title = document.getElementById('newTitle').value.trim();
-  const desc = document.getElementById('newDesc').value.trim();
-  const url = document.getElementById('newUrl').value.trim();
-  const imgLink = document.getElementById('newImgLink').value.trim() || '/img/default.png';
-  const file = document.getElementById('newImgFile').files[0];
-  if (!title || !url) return alert('Title and URL are required');
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = e => resizeImage(e.target.result, 256, 256, resized => {
-      db.ref('users/' + currentUser.uid + '/shortcuts').push({ title, desc, url, img: resized });
-      closeModal('addModal'); renderAll();
-    });
-    reader.readAsDataURL(file);
-  } else {
-    db.ref('users/' + currentUser.uid + '/shortcuts').push({ title, desc, url, img: imgLink });
-    closeModal('addModal'); renderAll();
-  }
-}
-
-function startEdit(key, title, desc, url, img) {
-  window.editKey = key;
-  document.getElementById('editTitle').value = title;
-  document.getElementById('editDesc').value = desc;
-  document.getElementById('editUrl').value = url;
-  document.getElementById('editImgLink').value = img;
-  document.getElementById('editModal').style.display='flex';
-}
-
-function updateShortcut() {
-  const title = document.getElementById('editTitle').value;
-  const desc = document.getElementById('editDesc').value;
-  const url = document.getElementById('editUrl').value;
-  const imgLink = document.getElementById('editImgLink').value;
-  const file = document.getElementById('editImgFile').files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = e => resizeImage(e.target.result, 256, 256, resized => {
-      db.ref('users/' + currentUser.uid + '/shortcuts/' + window.editKey).set({ title, desc, url, img: resized });
-      closeModal('editModal'); renderAll();
-    });
-    reader.readAsDataURL(file);
-  } else {
-    db.ref('users/' + currentUser.uid + '/shortcuts/' + window.editKey).set({ title, desc, url, img: imgLink });
-    closeModal('editModal'); renderAll();
-  }
-}
-
-function deleteShortcut(key) {
-  if (confirm("Are you sure?")) {
-    db.ref('users/' + currentUser.uid + '/shortcuts/' + key).remove().then(()=>renderAll());
-  }
-}
-
-function resizeImage(dataUrl, maxW, maxH, callback) {
-  const img = new Image();
-  img.onload = () => {
-    let ratio = Math.min(maxW / img.width, maxH / img.height, 1);
-    let canvas = document.createElement('canvas');
-    canvas.width = img.width * ratio;
-    canvas.height = img.height * ratio;
-    let ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    callback(canvas.toDataURL('image/png', 0.8));
-  }
-  img.src = dataUrl;
-}
-
-function closeModal(id) { document.getElementById(id).style.display='none'; }
-
-document.addEventListener("DOMContentLoaded", () => {
-  const themeBtn = document.getElementById('themeToggle');
-  const avatarEl = document.getElementById('userAvatar');
-
-  function applyTheme(theme) {
-    document.body.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
-    themeBtn.textContent = theme === 'dark' ? '☀️ Theme' : '🌗 Theme';
-
-    if (avatarEl && avatarEl.classList.contains('default-icon')) {
-      avatarEl.src = theme === 'dark' ? './img/user_light.png' : './img/user.png';
-    }
-  }
-
-  themeBtn.onclick = () => applyTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark');
-  applyTheme(localStorage.getItem('theme') || 'light');
-});
-
-</script>
+<!-- Scripts -->
+<script src="/script/toast.js"></script>
+<script src="/script/loading.js"></script>
+<script src="/script/index.js"></script>
 </body>
 </html>

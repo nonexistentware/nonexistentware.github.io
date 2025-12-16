@@ -1,4 +1,17 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://thesndbx.online/sitemap.xml
+# Disallow old/backup files
+Disallow: /services/filegenerator_old.html
+Disallow: /script/scvscript_old.js
+
+# Allow all images and styles
+Allow: /img/
+Allow: /style/
+Allow: /script/
+
+# Sitemap location
+Sitemap: https://www.thesndbx.online/sitemap.xml
+
+# Crawl-delay for polite crawling (optional)
+# Crawl-delay: 1
